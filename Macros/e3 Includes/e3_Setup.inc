@@ -376,13 +376,13 @@ SUB check_Plugins
 		/if (${NetBots}) {
 			/squelch /netbots on grab=on send=on
 		}
-	|Check MQ2NetAdvPath.
-		/if (!${Plugin[MQ2NetAdvPath].Name.Length}) {
-			/echo Plugin MQ2NetAdvPath is not loaded, attempting to resolve...
-			/plugin MQ2NetAdvPath
-			/delay 3s ${NetAdvPath}
-			/if (!${NetAdvPath}) {
-				/echo ***WARNING*** Could not load MQ2NetAdvPath. Please ensure you're using a copy of MQ2 which was compiled with the MQ2NetAdvPath plugin and try again.
+	|Check MQ2AdvPath.
+		/if (!${Plugin[MQ2AdvPath].Name.Length}) {
+			/echo Plugin MQ2AdvPath is not loaded, attempting to resolve...
+			/plugin MQ2AdvPath
+			/delay 3s ${AdvPath}
+			/if (!${AdvPath}) {
+				/echo ***WARNING*** Could not load MQ2AdvPath. Please ensure you're using a copy of MQ2 which was compiled with the MQ2AdvPath plugin and try again.
 			}
 		}
 	}
@@ -393,7 +393,7 @@ SUB check_Plugins
 		/delay 3s !${Select[${Stick.Status},NULL]}
 		/if (${Select[${Stick.Status},NULL]}) {
 			/echo ***WARNING*** Could not load MQ2MoveUtils! Macro functionality may be limited.
-			/if (!${NetAdvPath}) {
+			/if (!${AdvPath}) {
 				/echo Follow and Assist stick DISABLED.
 			} else {
 				/echo Assist and NPC stick DISABLED.

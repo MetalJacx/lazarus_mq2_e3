@@ -38,7 +38,7 @@ Sub IniToArrayV(IniKey, ArrayName)
     }
     /next i
     |/declare ${ArrayName}[${IniExt[${IniKey}].Count}] string ${ArrayScope}
-	/echo Creating non-empty array: ${ArrayName} with size: ${array_size}
+	|/echo Creating non-empty array: ${ArrayName} with size: ${array_size}
     /declare ${ArrayName}[${array_size}] string outer
     /if (${totalKeys}>0) {
       /for i 0 to ${Math.Calc[${totalKeys}-1]}
@@ -51,7 +51,7 @@ Sub IniToArrayV(IniKey, ArrayName)
       /next i
     }
   } else {
-	/echo Creating empty array: ${ArrayName}
+	|/echo Creating empty array: ${ArrayName}
 	/if (${Defined[${ArrayName}]}) /deletevar ${ArrayName}
 	/declare ${ArrayName}[0] string outer
   }
@@ -565,7 +565,7 @@ SUB BuildSpellArrayBase(ArrayName, NewArrayName, SkipParams)
 	/if (${Defined[${NewArrayName}]}) /deletevar ${NewArrayName}
 	
 	/declare ${NewArrayName}[${${ArrayName}.Size},${SpellProp.Size}] string outer 0
-	/echo NA ${NewArrayName} ${ArrayName} ${${ArrayName}.Size} ${SpellProp.Size} ${${NewArrayName}.Size[1]}
+	|/echo NA ${NewArrayName} ${ArrayName} ${${ArrayName}.Size} ${SpellProp.Size} ${${NewArrayName}.Size[1]}
 	/declare errMsg string local Review entry and restart macro
 
 	|no need to do work with zero size arrays
@@ -583,10 +583,10 @@ SUB BuildSpellArrayBase(ArrayName, NewArrayName, SkipParams)
 	/declare tmp_foundItem bool local false
 	|check to see if the spell/aa/etc actually exists.
 	/declare isHealArray bool local ${Select[${ArrayName},tankHeals,importantHeals,allHeals,hotSpells,groupHeals,lifeSupport,petHeal,petHeals,lifeTaps,xtargetHeals]}
-	/echo checking array name: ${ArrayName}
-	/echo isHealArray: ${isHealArray}
-	/echo Skip Params: ${SkipParams}
-	/echo Array Size: ${${ArrayName}.Size}
+	|/echo checking array name: ${ArrayName}
+	|/echo isHealArray: ${isHealArray}
+	|/echo Skip Params: ${SkipParams}
+	|/echo Array Size: ${${ArrayName}.Size}
 	/delay 1
 	/for i 1 to ${${ArrayName}.Size}
  /if (${${ArrayName}.Size}==0) /break

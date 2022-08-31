@@ -79,7 +79,7 @@ SUB loot_Area
   
   |/if (${Twist.Twisting}) /call pauseTwist
   |/delay 5s !${Me.Casting.ID}
-  /if (${NetAdvPath.Following}) /squelch /netfollow off
+  /if (${AdvPath.Following}) /squelch /netfollow off
   /if (${Stick.Active}) /squelch /stick off
 
   /declare ClosestCorpse        int local
