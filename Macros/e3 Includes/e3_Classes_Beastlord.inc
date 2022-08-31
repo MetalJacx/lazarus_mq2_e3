@@ -153,6 +153,7 @@ Sub checkParagonGroupCasting(ArrayName, int ArrayIndex)
 	
 	| Check range of group members, count number below manapct and add their mana together
 	/for g 1 to ${Group}
+ /if (${Group}==0) /break
 		/if (${check_Distance[${Group.Member[${g}].ID},${${ArrayName}[${ArrayIndex},${iMyRange}]}]}) {
 			/varcalc targetCount ${targetCount} + 1
 			/varcalc avgGrpMana ${avgGrpMana} + ${NetBots[${Group.Member[${g}]}].PctMana}

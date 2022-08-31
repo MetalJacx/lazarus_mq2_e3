@@ -76,6 +76,7 @@ Sub BuySpells
     /declare SpellName string local
     
     /for a 1 to ${Merchant.Items}
+ /if (${Merchant.Items}==0) /break
         /if (!${Me.FreeInventory}) /return
         /if (!${Merchant.Open}) /return
         /varset c 0
@@ -119,6 +120,7 @@ Sub BuySpells
                         
             | this loop is needed because the merchant item number doesn't match up to the interface line number
             /for b 1 to ${Window[MerchantWnd].Child[MW_ItemList].Items}
+ /if (${Window[MerchantWnd].Child[MW_ItemList].Items}==0) /break
                /if (${Window[MerchantWnd].Child[MW_ItemList].List[${b},2].Equal[${Merchant.Item[${a}]}]}) /varset c ${b}
             /next b
             
@@ -142,11 +144,13 @@ Sub ScribeSpells
     /if (${Cursor.ID}) /autoinv
 
     /for Bag 1 to ${MaxInvSlots}
+ /if (${MaxInvSlots}==0) /break
         /if (${InvSlot[pack${Bag}].Item.Container}) {
             /if (!${Window[Pack${Bag}].Open}) /itemnotify pack${Bag} rightmouseup
             /delay 1s ${Window[Pack${Bag}].Open}
 
             /for Slot 1 to ${InvSlot[pack${Bag}].Item.Container}
+ /if (${InvSlot[pack${Bag}].Item.Container}==0) /break
                 /if (${InvSlot[pack${Bag}].Item.Item[${Slot}].Type.Equal[Scroll]} && ${InvSlot[pack${Bag}].Item.Item[${Slot}].Spell.Level} <= ${Me.Level} && !${Me.Book[${InvSlot[pack${Bag}].Item.Item[${Slot}].Spell.Name}]}) {
                     /nomodkey /ctrlkey /itemnotify in pack${Bag} ${Slot} leftmouseup
                     /delay 1s ${Cursor.ID}
@@ -224,6 +228,7 @@ Sub BuyTomes
     /declare SpellName string local
     
     /for a 1 to ${Merchant.Items}
+ /if (${Merchant.Items}==0) /break
         /if (!${Me.FreeInventory}) /return
         /varset c 0
         /varset SpellName ${Merchant.Item[${a}].Spell.Name}
@@ -255,6 +260,7 @@ Sub BuyTomes
             
             | this loop is needed because the merchant item number doesn't match up to the interface line number
             /for b 1 to ${Window[MerchantWnd].Child[MW_ItemList].Items}
+ /if (${Window[MerchantWnd].Child[MW_ItemList].Items}==0) /break
                /if (${Window[MerchantWnd].Child[MW_ItemList].List[${b},2].Equal[${Merchant.Item[${a}]}]}) /varset c ${b}
             /next b
             
@@ -279,10 +285,12 @@ Sub ScribeTomes
     /if (!${HasVoA} && ${InvSlot[pack${InvScribeSlot}].Item.Type.Equal[Scroll]} && ${InvSlot[pack${InvScribeSlot}].Item.Spell.Level} <= ${Me.Level} && !${Me.Book[${InvSlot[pack${InvScribeSlot}].Item.Spell.Name}]}) /nomodkey /ctrlkey /itemnotify ${InvSlot[pack${InvScribeSlot}]} rightmouseup
 
     /for Bag 1 to ${MaxInvSlots}
+ /if (${MaxInvSlots}==0) /break
         /if (${InvSlot[pack${Bag}].Item.Container}) {
             /if (!${Window[Pack${Bag}].Open}) /itemnotify pack${Bag} rightmouseup
             /delay 1s ${Window[Pack${Bag}].Open}
             /for Slot 1 to ${InvSlot[pack${Bag}].Item.Container}
+ /if (${InvSlot[pack${Bag}].Item.Container}==0) /break
                 /if (${InvSlot[pack${Bag}].Item.Item[${Slot}].Name.Find[Tome]} && ${InvSlot[pack${Bag}].Item.Item[${Slot}].Type.Equal[Scroll]} && ${InvSlot[pack${Bag}].Item.Item[${Slot}].Spell.Level} <= ${Me.Level} && !${Me.Book[${InvSlot[pack${Bag}].Item.Item[${Slot}].Spell.Name}]}) {
                     /if (${HasVoA}) {
                         /nomodkey /ctrlkey /itemnotify in pack${Bag} ${Slot} rightmouseup

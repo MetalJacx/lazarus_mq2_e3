@@ -7,6 +7,7 @@ Sub Main
 /mqlog ${Target.CleanName} ${Target.Race} ${Target.Gender} ${Target.X} ${Target.Y} ${Target.Z} ${Target.Heading}
 /declare i int local
 	/for i 1 to ${Merchant.Items}
+ /if (${Merchant.Items}==0) /break
 		|/echo ${i} ${Merchant.Item[${i}].MerchQuantity}
 		/if (${Merchant.Item[${i}].MerchQuantity} < 0) {
 		  /mqlog , ${Target.ID} , ${i} , ${Merchant.Item[${i}].ID}

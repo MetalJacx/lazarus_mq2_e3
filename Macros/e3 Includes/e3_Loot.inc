@@ -96,6 +96,7 @@ SUB loot_Area
   /if (${Debug} || ${Debug_Loot}) /echo NumCorpses: ${NumCorpses}
   |/doevents flush YourKill
   /for i 1 to ${NumCorpses}
+ /if (${NumCorpses}==0) /break
     /varset ClosestCorpse ${NearestSpawn[${i},npc corpse zradius 50 radius ${seek_Radius} "_"].ID}
     /varset CorpseList ${CorpseList}${ClosestCorpse}|
   /next i
@@ -104,6 +105,7 @@ SUB loot_Area
     /squelch /hidecor looted
   }
   /for i 1 to ${NumCorpses}
+ /if (${NumCorpses}==0) /break
     /if (${Debug} || ${Debug_Loot}) /echo Corpse ${i} of ${NumCorpses}, ${CorpsesLeft} left
     |iterate list of corpses
     /if (!${CorpsesLeft}) /return
@@ -111,6 +113,7 @@ SUB loot_Area
     /varset ClosestCorpse ${CorpseList.Arg[1,|]}
     /varset ClosestCorpseDist ${Math.Distance[${Spawn[id ${ClosestCorpse}].Y},${Spawn[id ${ClosestCorpse}].X}]}
     /for c 1 to ${CorpsesLeft}
+ /if (${CorpsesLeft}==0) /break
       /varset TMPClosestCorpse ${CorpseList.Arg[${c},|]}
       /varset TMPClosestCorpseDist ${Math.Distance[${Spawn[id ${TMPClosestCorpse}].Y},${Spawn[id ${TMPClosestCorpse}].X}]}
       |/if (${TMPClosestCorpseDist} < ${ClosestCorpseDist}) {
@@ -188,6 +191,7 @@ SUB lootCorpse
 
   |must use numItems, ${Corpse.Items} recalcs every iteration
   /for i 1 to ${numItems}
+ /if (${numItems}==0) /break
     |recalculate the free inventory
     /varcalc freeInventory ${Me.FreeInventory}-${LootNumOfFreeSlotsOpen}
     /if (${freeInventory}<1) {
@@ -225,6 +229,7 @@ SUB lootCorpse
         /if (${Defined[stackableItemArray]}) {
           /varset stackCounter 1
           /for stackCounter 1 to ${stackableItemArray.Size}
+ /if (${stackableItemArray.Size}==0) /break
               /if (!${importantItem} && ${Corpse.Item[${i}].Name.Equal[${stackableItemArray[${stackCounter}]}]}) {
                 /varset importantItem TRUE
                 /echo Found Important stackable item: ${stackableItemArray[${stackCounter}]}
@@ -632,6 +637,7 @@ SUB loot_Setup
   |**/if (${Defined[stackableItemArray]}) {
      /declare i int local 
     /for i 1 to ${stackableItemArray.Size}
+ /if (${stackableItemArray.Size}==0) /break
       /echo stackable item: ${stackableItemArray[${i}]}
     /next i
   }**|

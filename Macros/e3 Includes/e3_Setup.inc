@@ -135,6 +135,7 @@ SUB e3_Setup(modeSelect)
   | Setup Includes ==========================================================================================================
   /declare i int local
 	/for i 1 to ${macroSetups.Size}
+ /if (${macroSetups.Size}==0) /break
      |/g ${macroSetups[${i}]} ${Time} Start
 		/if (${macroSetups[${i}].Equal[class]}) /varset macroSetups[${i}] ${Me.Class.ShortName}
 		/if (${Bool[${macroSetups[${i}]}]}) /call ${macroSetups[${i}]}_Setup
@@ -243,6 +244,7 @@ SUB EVENT_make_MacroSettingsIni
 	| Call each setup
 	/declare i int local
 	/for i 1 to ${macroSetups.Size}
+ /if (${macroSetups.Size}==0) /break
 		/if (${macroSetups[${i}].Equal[class]}) /varset macroSetups[${i}] ${Me.Class.ShortName}
 		/if (${Bool[${macroSetups[${i}]}]}) /call ${macroSetups[${i}]}_MacroSettings
 	/next i
@@ -278,6 +280,7 @@ SUB EVENT_make_CharacterSettingsIni
 	/call IniToArrayV "${advSettings_Ini},Included Setups,Include#" macroSetups
 	/declare i int local
 	/for i 1 to ${macroSetups.Size}
+ /if (${macroSetups.Size}==0) /break
 		/if (${macroSetups[${i}].Equal[class]}) /varset macroSetups[${i}] ${Me.Class.ShortName}
 		/if (${Bool[${macroSetups[${i}]}]}) /call ${macroSetups[${i}]}_CharacterSettings
 		/delay 2
@@ -311,6 +314,7 @@ SUB EVENT_updateAliases
 	/declare i int local
 	
 	/for i 1 to ${macroSetups.Size}
+ /if (${macroSetups.Size}==0) /break
 		/if (${macroSetups[${i}].Equal[class]}) /varset macroSetups[${i}] ${Me.Class.ShortName}
 		/if (${Bool[${macroSetups[${i}]}]}) {
 			/call ${macroSetups[${i}]}_Aliases
@@ -432,15 +436,7 @@ SUB check_Plugins
 	/if (${Plugin[MQ2LinkDB].Name.Length} && ${Plugin[MQ2LinkDB].Version}>2.1) {
 				/link /scan off
 	}
-  |Check MQ2ITurbo
-  /if (!${Plugin[mq2turbo].Name.Length}) {
-    /plugin MQ2Turbo
-    /delay 3s ${Plugin[MQ2Turbo].Name.Length}
-    /if (!${Plugin[MQ2Turbo].Name.Length}) {
-      /echo ***WARNING*** Could not load MQ2Turbo! Performance may be impacted.
-      /echo Using default turbo in e3.mac
-    }
-  }
+
 |Check MQ2HUD.
 |	/if (!${Plugin[mq2hud].Name.Length}) /plugin MQ2HUD
 /RETURN

@@ -12,7 +12,7 @@
 SUB Main(modeSelect)
   
  
-  /declare macroVersion string outer 8.2
+  /declare macroVersion string outer 9.0
   /declare Debug bool outer false
   /declare IniMode string outer Ini
   /if (${Bool[${Plugin[MQ2IniExt]}]}) {
@@ -29,7 +29,6 @@ SUB Main(modeSelect)
   /if (${Select[${Me.Class.ShortName},CLR,DRU,SHM]}) {
     /varset mainLoop_IsHealer True
   } 
-
 
 :MainLoop
 /if (${Debug}) /echo |- MainLoop ==>
@@ -66,6 +65,7 @@ SUB Main(modeSelect)
         /varset ActionTaken False
       }
       /for i 1 to ${mainLoop_Array.Size}
+ /if (${mainLoop_Array.Size}==0) /break
 				/if (${Bool[${mainLoop_Array[${i}]}]}) {
           /call ${mainLoop_Array[${i}]}
           /if (${castReturn.Equal[CAST_INTERRUPTED]}) {
@@ -81,7 +81,8 @@ SUB Main(modeSelect)
           /call castNowSpells
           /varset castReturn  
         } 
-      /if (!${ActionTaken}) /next i
+      /if (${ActionTaken}) /break
+ /next i
 
       /if (${Me.CombatState.NotEqual[COMBAT]} && !${Assisting}) {
         /if ((!${Me.Casting.ID} || ${Me.Class.ShortName.Equal[BRD]}) && !${use_TargetAE}) /call completePendingExchange
@@ -121,6 +122,7 @@ SUB Main(modeSelect)
 SUB Background_Events
 	/declare i int local
 	/for i 1 to ${macroSetups.Size}
+ /if (${macroSetups.Size}==0) /break
 		/if (${Bool[${macroSetups[${i}]}]}) /call ${macroSetups[${i}]}_Background_Events
   /next i
 /RETURN

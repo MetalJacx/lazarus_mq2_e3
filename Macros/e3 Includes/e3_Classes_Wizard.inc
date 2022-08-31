@@ -7,13 +7,15 @@ SUB check_Harvest
     /if (${Me.CombatState.Equal[COMBAT]}) {
       /declare s int local
       /for s 1 to ${harvestSpells2D.Size[1]}
+ /if (${harvestSpells2D.Size[1]}==0) /break
         /call check_Ready "harvestSpells2D" ${s}
         /if (${c_Ready} && ${harvestSpells2D[${s},${iIfs}]}) {
           /if (${check_Mana["harvestSpells2D",${s}]}) {
             /call e3_Cast ${Me.ID} "harvestSpells2D" ${s}
           }
         }
-      /if (!${ActionTaken}) /next s
+      /if (${ActionTaken}) /break
+ /next s
     }
 	}
 /RETURN

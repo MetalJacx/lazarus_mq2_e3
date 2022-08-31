@@ -388,6 +388,7 @@ SUB set_NextHealer
   /if (${Debug} || ${Debug_HealChain}) /echo ${Select[${Chain_LastHealer},${Chain_MemberList}]} , ${Chain_LastHealer}, ${Chain_MemberList}
 	/declare e int local ${Math.Calc[${Select[${Chain_LastHealer},${Chain_MemberList}]} + 1]}
 	/for i 1 to ${Chain_Count}
+ /if (${Chain_Count}==0) /break
 	| If e was set too high, reset to 1
 	/if (!${Chain_MemberList.Arg[${e},,].Length}) /varset e 1
 	| Check that the next healer is in zone

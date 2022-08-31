@@ -124,12 +124,14 @@ SUB summon_Corpse(SoulStoneToUse)
     } else {
     |--Search packslots.
         /for count_i 1 to ${numInventorySlots}
+ /if (${numInventorySlots}==0) /break
         |---If the item in the packslot is a soulstone, pick it up.
         /if (!${Me.Inventory[pack${count_i}].Container} && ${SoulStoneToUse.Equal[${Me.Inventory[pack${count_i}]}]}) {
         /itemnotify pack${count_i} leftmouseup
         } else {
         |---If the item in the packslot is a container, search it.
         /for e 1 to ${Me.Inventory[pack${count_i}].Container}
+ /if (${Me.Inventory[pack${count_i}].Container}==0) /break
         /if (${SoulStoneToUse.Equal[${Me.Inventory[pack${count_i}].Item[${e}]}]}) {
         /if (!${Window[pack${count_i}].Open}) /itemnotify pack${count_i} rightmouseup
         /delay 1s ${Window[pack${count_i}].Open}
@@ -335,6 +337,7 @@ SUB getmoneyfrombanker
     /next count_i
     /varset count_i 0
     /for count_i 1 to ${SoulStoneCost.Length}
+ /if (${SoulStoneCost.Length}==0) /break
         /keypress ${SoulStoneCost.Mid[${count_i},1]} chat
         /delay 3
     /next count_i

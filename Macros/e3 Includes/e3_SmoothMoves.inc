@@ -380,6 +380,7 @@ SUB event_run_Route(line, ChatSender, route_Name)
       } else {
         | For the closest waypoint to the end of the route.
         /for i ${closest_Point_wLOS} to ${total_WPs}
+ /if (${total_WPs}==0) /break
           | If this element is a waypoint, go to it.
           /if (!${route_From_Ini.Arg[${i},|].Find[**]}) {
             /call next_WP ${route_From_Ini.Arg[${i},|].Arg[1,_].Arg[1,,]} ${route_From_Ini.Arg[${i},|].Arg[1,_].Arg[2,,]}

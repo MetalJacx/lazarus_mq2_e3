@@ -32,6 +32,7 @@ sub event_add_RuneTarget(line, ChatSender, RuneTarget)
     } else {
         /declare i int local
         /for i 1 to ${runeTargets.Size}
+ /if (${runeTargets.Size}==0) /break
           /if (${runeTargets[${i}].Equal[${Spawn[pc =${RuneTarget}].CleanName}]}) {
             /docommand ${ChatToggle} I am already maintaining rune ${RuneTarget}
             /return
@@ -54,6 +55,7 @@ sub event_remove_RuneTarget(line, ChatSender, RuneTarget)
       /if (${Defined[RuneTarget]}) {
         /declare i int local
         /for i 1 to ${runeTargets.Size}
+ /if (${runeTargets.Size}==0) /break
           /if (${runeTargets[${i}].Equal[${Spawn[pc =${RuneTarget}].CleanName}]}) {
             /docommand ${ChatToggle} No longer maintaining Rune on [${runeTargets[${i}]}].
             /call RemoveArrayElement runeTargets "${runeTargets[${i}]}"
@@ -76,7 +78,9 @@ Sub check_rune
   /declare t int local
   /declare s int local
   /for t 1 to ${runeTargets.Size}
-    /for s 1 to ${runeArray2D.Size[1]}
+ /if (${runeTargets.Size}==0) /break
+    /for t 1 to ${runeTargets.Size}
+ /if (${runeTargets.Size}==0) /break
       /if (${Bool[${NetBots[${runeTargets[${t}]}].InZone}]} && !${Bool[${NetBots[${runeTargets[${t}]}].Buff.Find[${runeArray2D[${s},${iCastID}]} ]}]}) {
         /call check_Ready "runeArray2D" ${s}
         /if (${c_Ready}) {
@@ -160,6 +164,7 @@ Sub check_charm
     /if (!${Bool[${Me.Pet.ID}]}) {
       /bc [+r+] << ${Spawn[id ${charmTarget}].CleanName} is not Charmed! >> [+r+]
       /for s 1 to ${charmArray2D.Size[1]}
+ /if (${charmArray2D.Size[1]}==0) /break
       /call check_Ready "charmArray2D" ${s}
       /if (${c_Ready}) {
         /if (${check_Mana["charmArray2D",${s}]}) {
@@ -184,6 +189,7 @@ Sub check_charm
     } else {
     |accounce time left on charm
       /for s 1 to ${charmArray2D.Size[1]}
+ /if (${charmArray2D.Size[1]}==0) /break
         /if (${Bool[${Me.PetBuff[${charmArray2D[${s},${iSpellName}]}]}]}) {
           /varset charmDuration ${Pet.BuffDuration[${charmArray2D[${s},${iSpellName}]}].TotalSeconds}
           |/echo charmduration ${charmDuration} timer ${charmBuffTimer}
@@ -220,11 +226,13 @@ sub check_mez
     /declare mezTarg int local
     /if (!${SpawnCount[playerstate 4 npc targetable radius ${AE_Radius}]}) /return
     /for i 1 to ${SpawnCount[playerstate 4 npc targetable radius ${AE_Radius}]}
+ /if (${SpawnCount[playerstate 4 npc targetable radius ${AE_Radius}]}==0) /break
       /varset mezTarg ${NearestSpawn[${i},playerstate 4 npc targetable radius ${AE_Radius}].ID}
       /call TrueTarget ${mezTarg}
       /delay 1s ${Target.BuffsPopulated}
       /if (${Select[${AssistTarget},${mezTarg}]}==0 && (!${Bool[${Target.Mezzed}]} || ${Target.Mezzed.Duration.TotalSeconds} < 8)) {
         /for s 1 to ${mezArray2D.Size[1]}
+ /if (${mezArray2D.Size[1]}==0) /break
           /call check_Ready "mezArray2D" ${s}
           /if (${c_Ready}) {
             /if (${check_Mana["mezArray2D",${s}]}) {
@@ -234,9 +242,11 @@ sub check_mez
               }
             }
           }
-        /if (!${ActionTaken}) /next s
+        /if (${ActionTaken}) /break
+ /next s
       }
-    /if (!${ActionTaken}) /next i
+    /if (${ActionTaken}) /break
+ /next i
   }
 /if (${Debug}) /echo <== check_Mez -|
 /return

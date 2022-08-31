@@ -16,6 +16,7 @@ SUB CheckAxes
   /if (${Defined[axeAbility2D]}) {
     /declare i int local
     /for i 1 to ${axeAbility2D.Size[1]}
+ /if (${axeAbility2D.Size[1]}==0) /break
     /declare numAxes int local ${axeAbility2D[${i},${iCheckFor}]}
     /if (!${Bool[${numAxes}]}) /varset numAxes 20
       /if (${FindItemCount[${axeAbility2D[${i},${iCastName}]}]} < ${numAxes}) {
@@ -27,7 +28,8 @@ SUB CheckAxes
           /call ClearCursor
         }
       }
-    /if (!${ActionTaken}) /next i
+    /if (${ActionTaken}) /break
+ /next i
   }
 /RETURN
 |----------------------------------------------------------------------------|

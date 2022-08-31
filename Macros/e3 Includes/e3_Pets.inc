@@ -280,13 +280,15 @@ SUB check_AutoShrink
 	/if (${Me.Pet.ID} && ${Me.Pet.Height}>1 && ${Me.Pet.Distance}) {
     /declare s int local
     /for s 1 to ${petShrink2D.Size[1]}
+ /if (${petShrink2D.Size[1]}==0) /break
       /call check_Ready "petShrink2D" ${s}
       /if (${c_Ready}) {
         /if (${check_Mana["petShrink2D",${s}]} && ${Me.Pet.Distance} < ${petShrink2D[${s},${iMyRange}]}) {
           /call e3_Cast ${Me.Pet.ID} "petShrink2D" ${s}
         }
       }
-    /if (!${ActionTaken}) /next s
+    /if (${ActionTaken}) /break
+ /next s
   }
 /if (${Debug} || ${Debug_Pets}) /echo <== check_AutoShrink -|
 /RETURN
@@ -323,6 +325,7 @@ SUB check_petHeal
 		/if (!${petMended}) {
       /declare s int local
       /for s 1 to ${petHeal2D.Size[1]}
+ /if (${petHeal2D.Size[1]}==0) /break
         /if (${Me.Pet.PctHPs} <= ${petHeal2D[${s},${iHealPct}]}) {
           /call check_Ready "petHeal2D" ${s}
           /if (${c_Ready}) {
@@ -346,6 +349,7 @@ SUB buffPet
   /if (!${Defined[petBuffs2D]}) /return
 	/declare s int local
 	/for s 1 to ${petBuffs2D.Size[1]}
+ /if (${petBuffs2D.Size[1]}==0) /break
 	|/echo ${petBuffs2D[${s},${iCastName}]} stack ${petBuffs2D[${s},${iSpellName}]} ${Spell[${petBuffs2D[${s},${iSpellName}]}].StacksPet} has !${Bool[${Me.PetBuff[${petBuffs2D[${s},${iSpellName}]}]}]}
 	|removing ${Spell[${petBuffs2D[${s},${iSpellName}]}].StacksPet} for now as balikor's mark reports non-stacking
   /if (!${Bool[${Me.PetBuff[${petBuffs2D[${s},${iSpellName}]}]}]} && !${Bool[${Me.PetBuff[${petBuffs2D[${s},${iCheckFor}]}]}]} && !${Defined[nht${petBuffs2D[${s},${iCastID}]}]}) {
@@ -366,7 +370,8 @@ SUB buffPet
     }
   }
   :skipBuff
-  /if (!${ActionTaken}) /next s
+  /if (${ActionTaken}) /break
+ /next s
 /if (${Debug} || ${Debug_Pets}) /echo <== buffPet -|
 /RETURN
 

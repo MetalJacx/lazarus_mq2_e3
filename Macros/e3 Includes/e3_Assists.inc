@@ -335,6 +335,7 @@ SUB CombatAbilities
   /declare castIfName string local
 
   /for i 1 to ${Abilities2D.Size[1]}
+ /if (${Abilities2D.Size[1]}==0) /break
 
       |skips if contains or not contains
       /varset castIfName	${Abilities2D[${i},${iCastIf}]}
@@ -468,6 +469,7 @@ SUB check_Nukes
     }
 
    /for s 1 to ${Nukes2D.Size[1]}
+ /if (${Nukes2D.Size[1]}==0) /break
     
     /varset typeOfCast  
     
@@ -525,6 +527,7 @@ SUB check_Nukes
       /varset currentCastName ${Nukes2D[${castIndex},${iCastName}]}
       /declare i int local
       /for i 1 to ${Nukes2D.Size[1]}
+ /if (${Nukes2D.Size[1]}==0) /break
         |if not the currently casting spell, lets check if they are ready to cast.          
         /if (!${Nukes2D[${i},${iCastName}].Equal[${currentCastName}]}) {
           
@@ -563,6 +566,7 @@ SUB check_Nukes
       /if (${HaveGiftOfManaBuff}) {
         /if (${Debug} || ${Debug_Assists}) /echo have gift of mana, selecting GOM spell flag
         /for m 1 to ${Nukes2D.Size[1]}
+ /if (${Nukes2D.Size[1]}==0) /break
           /if (${Nukes2D[${m},${iGiftOfMana}]}) {
         
             /call check_Ready "Nukes2D" ${m}
@@ -664,7 +668,8 @@ SUB check_Nukes
       }
     }
 	:skipCast
-  /if (!${ActionTaken}) /next s
+  /if (${ActionTaken}) /break
+ /next s
   }
 /if (${Debug} || ${Debug_Assists}) /echo <== check_Nukes -|
 /RETURN
@@ -678,6 +683,7 @@ SUB check_Nukes
 SUB check_OffAssistSpells
   | If we're not currently attacking something, don't do anything
   /if (!${Assisting}) /return
+  /if (${Bool[${Raid}]}) /return
   | loop through the xtargets checking if any match our criteria
   | break on the first one that matches
   /declare pctAggro int local 80
@@ -763,6 +769,7 @@ SUB cast_longTermSpells(int spellTarget, string ArrayName)
   /declare spellID int local 0
 
 	/for s 1 to ${${ArrayName}.Size[1]}
+ /if (${${ArrayName}.Size[1]}==0) /break
 
     
      /varset spellName ${${ArrayName}[${s},${iCastName}]} 
@@ -800,7 +807,6 @@ SUB cast_longTermSpells(int spellTarget, string ArrayName)
     /varset checkForName	${${ArrayName}[${s},${iCheckFor}]}
     /if (!${checkForName.Equal[-1]} ) {
           /if (${Bool[${Target.Buff[${checkForName}]}]}) {
-            |/echo \ag [${Time}] ${Target.CleanName} is not debuffed with ${checkForDebuff} , skipping
             /goto :skipcast
           }   
     }
@@ -918,7 +924,8 @@ SUB cast_longTermSpells(int spellTarget, string ArrayName)
       /call createTimer "${spellTimer}" "${spellRecast}s"
     }
   :skipCast
-  /if (!${ActionTaken}) /next s
+  /if (${ActionTaken}) /break
+ /next s
 /if (${Debug} || ${Debug_Assists}) /echo <== cast_longTermSpells - [${ArrayName}] -|
 /RETURN
 
@@ -946,6 +953,7 @@ SUB Event_DebuffsOn(line, ChatSender, MobID)
 					/if (${Defined[Debuff_Targets]}) {
 						/declare i int local
 						/for i 1 to ${Debuff_Targets.Size}
+ /if (${Debuff_Targets.Size}==0) /break
 							/if (${Debuff_Targets[${i}].Arg[1,_]} == ${MobID}) {
 								/docommand ${ChatToggle} I am already debuffing ${Spawn[id ${MobID}].CleanName}.
 								/goto :Skip
@@ -986,6 +994,7 @@ SUB Event_DebuffsAllOn(line, ChatSender, MobID)
 					/if (${Defined[Debuff_AllTargets]}) {
 						/declare i int local
 						/for i 1 to ${Debuff_AllTargets.Size}
+ /if (${Debuff_AllTargets.Size}==0) /break
 							/if (${Debuff_AllTargets[${i}].Arg[1,_]} == ${MobID}) {
 								/docommand ${ChatToggle} I am already debuffing ${Spawn[id ${MobID}].CleanName}.
 								/goto :Skip
@@ -1033,6 +1042,7 @@ SUB Debuffs_OnCommand
 	/declare i int local
 	/if (${Defined[Debuff_Targets]}) {
     /for i 1 to ${Debuff_Targets.Size}
+ /if (${Debuff_Targets.Size}==0) /break
       /varset targetID ${Debuff_Targets[${i}].Arg[1,_]}
       /varset targetZone ${Debuff_Targets[${i}].Arg[2,_]}
       | Check Mob Zone
@@ -1061,6 +1071,7 @@ SUB Debuffs_OnAll
 	/declare i int local
 	/if (${Defined[Debuff_AllTargets]}) {
     /for i 1 to ${Debuff_AllTargets.Size}
+ /if (${Debuff_AllTargets.Size}==0) /break
       /varset targetID ${Debuff_AllTargets[${i}].Arg[1,_]}
       /varset targetZone ${Debuff_AllTargets[${i}].Arg[2,_]}
       | Check Mob Zone
@@ -1106,6 +1117,7 @@ SUB Event_DoTsOn(line, ChatSender, MobID)
           /if (${Defined[DoT_Targets]}) {
             /declare i int local
             /for i 1 to ${DoT_Targets.Size}
+ /if (${DoT_Targets.Size}==0) /break
               /if (${DoT_Targets[${i}].Arg[1,_]} == ${MobID}) {
                 /docommand ${ChatToggle} I am already dotting ${Spawn[id ${MobID}].CleanName}.
                 /goto :Skip
@@ -1151,6 +1163,7 @@ SUB DoTs_OnCommand
 	/declare i int local
 	/if (${Defined[DoT_Targets]}) {
     /for i 1 to ${DoT_Targets.Size}
+ /if (${DoT_Targets.Size}==0) /break
       /varset targetID ${DoT_Targets[${i}].Arg[1,_]}
       /varset targetZone ${DoT_Targets[${i}].Arg[2,_]}
       | Check Mob Zone
@@ -1196,6 +1209,7 @@ SUB cast_damageOverTimeSpells(int TargetID, string ArrayName)
 |${${ArrayName}[${i},${iSpellGem}]}        --> int 
 
 /for i 1 to ${${ArrayName}.Size[1]}
+ /if (${${ArrayName}.Size[1]}==0) /break
 
     /varset spellName ${${ArrayName}[${i},${iCastName}]} 
     |/echo SpellName is :${spellName}
@@ -1355,6 +1369,7 @@ SUB cast_damageOverTimeSpells(int TargetID, string ArrayName)
       |These spells will De-Mem and Re-Mem a new spell immediately after cast. /Gem|# is ignored for these spells. 
       /if (${Bool[${Me.SpellInCooldown}]} && ${${ArrayName}[${i},${iAllowSpellSwap}]} && ${Bool[${Me.Book[${${ArrayName}[${i},${iCastName}]}]}]}) {
         /for iSpellSwap 1 to ${${ArrayName}.Size[1]}
+ /if (${${ArrayName}.Size[1]}==0) /break
           /if (${TimeLeftOnMySpell[${${ArrayName}[${iSpellSwap},${iCastName}]}]} > 18 || ${Bool[${Me.Gem[${${ArrayName}[${iSpellSwap},${iCastName}]}]}]} || !${Bool[${Me.Book[${${ArrayName}[${iSpellSwap},${iCastName}]}]}]} || !${${ArrayName}[${iSpellSwap},${iAllowSpellSwap}]}) {
             /continue
           }
@@ -1376,6 +1391,7 @@ SUB cast_damageOverTimeSpells(int TargetID, string ArrayName)
         |In E3, if no /Gem|# is defined it automatically assigns the ${DefaultGem} to that specific spell's ${iSpellGem} variable.
         /if (${Bool[${Me.SpellInCooldown}]} && ${Bool[${Me.Book[${${ArrayName}[${i},${iCastName}]}]}]} && !${Bool[${${ArrayName}[${i},${iSpellSwap}]}]}) {
           /for iSpellSwap 1 to ${${ArrayName}.Size[1]}
+ /if (${${ArrayName}.Size[1]}==0) /break
             /if (!${Bool[${Me.Gem[${${ArrayName}[${iSpellSwap},${iCastName}]}]}]} && ${Bool[${Me.Book[${${ArrayName}[${iSpellSwap},${iCastName}]}]}]}) {
               |After /MemSpell the book will automatically close. However, while in combat this command sometimes fails to start the first time we send it.
               |We put this into a loop to ensure "it as least tries" -- If the spell really does fail to mem it will exit on it's own and try again next cycle.
@@ -1518,6 +1534,7 @@ SUB check_AE
   /declare s int local
 	/if (${use_PBAE} && ${Defined[PBAE_Spells2D]}) {
     /for s 1 to ${PBAE_Spells2D.Size[1]}
+ /if (${PBAE_Spells2D.Size[1]}==0) /break
       /call check_Ready "PBAE_Spells2D" ${s}
       /if (${c_Ready} && ${PBAE_Spells2D[${s},${iIfs}]}) {
         /if (${check_Mana["PBAE_Spells2D",${s}]}) {
@@ -1530,7 +1547,8 @@ SUB check_AE
           }
         }
       }
-    /if (!${ActionTaken}) /next s
+    /if (${ActionTaken}) /break
+ /next s
 	}
   /if (${use_TargetAE} && ${Defined[TargetAE_Spells2D]}) {
     |if i have an assist target, use that as ae target, else use aeTarget
@@ -1542,6 +1560,7 @@ SUB check_AE
       /varset useBestTarget ${aeTarget}
     }
     /for s 1 to ${TargetAE_Spells2D.Size[1]}
+ /if (${TargetAE_Spells2D.Size[1]}==0) /break
       /call check_Ready "TargetAE_Spells2D" ${s}
       /if (${c_Ready} && ${TargetAE_Spells2D[${s},${iIfs}]}) {
         /if (${check_Mana["TargetAE_Spells2D",${s}]}) {
@@ -1553,7 +1572,8 @@ SUB check_AE
           }
         }
       }
-    /if (!${ActionTaken}) /next s
+    /if (${ActionTaken}) /break
+ /next s
   }
 /if (${Debug} || ${Debug_Assists}) /echo <== check_AE -|
 /RETURN
@@ -1601,6 +1621,7 @@ Sub useSwarms
 		/if (${SpawnCount[id ${swarmTarget}]} && ${Spawn[${swarmTarget}].Type.NotEqual[Corpse]} && ${Select[${Spawn[${swarmTarget}].Type},${AcceptableTargetTypes}]}) {
 			/declare i int local
 			/for i 1 to ${swarmPets2D.Size[1]}
+ /if (${swarmPets2D.Size[1]}==0) /break
         /call check_Ready "swarmPets2D" ${i}
         /if (${c_Ready} && ${swarmPets2D[${i},${iIfs}]}) {
           /if (${check_Distance[${swarmTarget},${swarmPets2D[1,${iMyRange}]}]}) {
@@ -1655,6 +1676,7 @@ SUB useBurns(ArrayName)
 	/declare i int local
   /declare isHealer bool Local ${Select[${Me.Class.ShortName},CLR,DRU,SHM]}
 	/for i 1 to ${${ArrayName}.Size[1]}
+ /if (${${ArrayName}.Size[1]}==0) /break
 
     /call check_Ready "${ArrayName}" ${i}
     /if (${c_Ready} && ${${ArrayName}[${i},${iIfs}]}) {
@@ -1702,6 +1724,7 @@ SUB check_lifeTap
   /if (${Assisting} && ${Defined[lifeTaps2D]}) {
     /declare s int local
     /for s 1 to ${lifeTaps2D.Size[1]}
+ /if (${lifeTaps2D.Size[1]}==0) /break
     /call check_Ready "lifeTaps2D" ${s}
     /if (${c_Ready} && ${lifeTaps2D[${s},${iIfs}]}) {
       /if (${check_Mana["lifeTaps2D",${s}]}) {
@@ -1712,7 +1735,8 @@ SUB check_lifeTap
         }
       }
     }
-    /if (!${ActionTaken}) /next s
+    /if (${ActionTaken}) /break
+ /next s
   }
   /if (${Debug}) /echo <== check_LifeTap -|
 /RETURN
@@ -1752,6 +1776,7 @@ SUB event_SpellSet(line, ChatSender, spellArray)
           /echo \ag Nukes set to [${spellsToUse}] - ${Nukes2D.Size[1]} spells
           /if (!${Following}) {
             /for i 1 to ${Nukes2D.Size[1]}
+ /if (${Nukes2D.Size[1]}==0) /break
               /if (!${Bool[${Me.Gem[${Nukes2D[${i},${iCastName}]}]}]}) {
                 /call memorize_spell "${Nukes2D[${i},${iCastName}]}" ${Nukes2D[${i},${iSpellGem}]}
               }
@@ -1777,6 +1802,7 @@ SUB event_SpellSet(line, ChatSender, spellArray)
             /echo \ag Dots on Assist set to [${spellsToUse}] - ${Assist_DoTs2D.Size[1]} spells
             /if (!${Following}) {
               /for i 1 to ${Assist_DoTs2D.Size[1]}
+ /if (${Assist_DoTs2D.Size[1]}==0) /break
                 /if (!${Bool[${Me.Gem[${Assist_DoTs2D[${i},${iCastName}]}]}]}) {
                   /call memorize_spell "${Assist_DoTs2D[${i},${iCastName}]}" ${Assist_DoTs2D[${i},${iSpellGem}]}
                 }
@@ -1803,6 +1829,7 @@ SUB event_SpellSet(line, ChatSender, spellArray)
             /echo \ag Dots on Command set to [${spellsToUse}] - ${Command_DoTs2D.Size[1]} spells
             /if (!${Following}) {
               /for i 1 to ${Command_DoTs2D.Size[1]}
+ /if (${Command_DoTs2D.Size[1]}==0) /break
               /if (!${Bool[${Me.Gem[${Command_DoTs2D[${i},${iCastName}]}]}]}) {
                 /call memorize_spell "${Command_DoTs2D[${i},${iCastName}]}" ${Command_DoTs2D[${i},${iSpellGem}]}
               }
@@ -1819,6 +1846,7 @@ SUB event_SpellSet(line, ChatSender, spellArray)
     /call IniToArrayV "${Character_Ini},Buffs,Combat Buff#"	CombatBuffs
     /if (${Defined[CombatBuffs]}) {
       /for s 1 to ${CombatBuffs.Size}
+ /if (${CombatBuffs.Size}==0) /break
         /if (${Select[${CombatBuffs[${s}]},${poisonFR},${poisonCR},${poisonPR}]}) {
           /varset cbpi ${s}
           /if (${Debug} || ${Debug_Assists}) /echo poison found in ${cbpi} ${CombatBuffs[${cbpi}]}
@@ -1828,6 +1856,7 @@ SUB event_SpellSet(line, ChatSender, spellArray)
     /call IniToArrayV "${Character_Ini},Buffs,Self Buff#" SelfBuffs
     /if (${Defined[SelfBuffs]}) {
       /for s 1 to ${SelfBuffs.Size}
+ /if (${SelfBuffs.Size}==0) /break
         /if (${Select[${SelfBuffs[${s}]},${poisonFR},${poisonCR},${poisonPR}]}) {
           /varset sbpi ${s}
           /if (${Debug} || ${Debug_Assists}) /echo poison found in ${sbpi} ${SelfBuffs[${sbpi}]}
@@ -2031,6 +2060,7 @@ SUB assist_SpellArrays
   /if (${Defined[MyNukes]}) {
     /declare i int local
     /for i 1 to ${MyNukes.Size}
+ /if (${MyNukes.Size}==0) /break
       /if (${MyNukes[${i}].Find[Lava Orb]}) /varset summonMoltenOrb TRUE
     /next i
   }
@@ -2303,6 +2333,7 @@ SUB event_debuffsOnAll(line)
 SUB GetEmptySpellGem
   /declare i int local 
   /for i 1 to ${Math.Calc[8+${Me.AltAbility[Mnemonic Retention].Rank}]}
+ /if (${Math.Calc[8+${Me.AltAbility[Mnemonic Retention].Rank}]}==0) /break
     /if (!${Bool[${Me.Gem[${i}]}]}) {
       /RETURN ${i}
     }

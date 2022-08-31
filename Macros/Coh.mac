@@ -70,6 +70,7 @@ Sub CoHGroup
 	/declare iCoHsPerformed   int local
 	/declare grouplist string local
 	/for iGroupMemberCOH 1 to ${Group.Members}
+ /if (${Group.Members}==0) /break
 		/varset grouplist ${grouplist}${Group.Member[${iGroupMemberCOH}].CleanName},
 	/next iGroupMemberCOH
 	/announce CoHing ${grouplist} 
@@ -77,6 +78,7 @@ Sub CoHGroup
 	:COHGroupLoop
 		/varset iCoHsPerformed 0
 		/for iGroupMemberCOH 1 to ${Group.Members}
+ /if (${Group.Members}==0) /break
 			|/echo CoH ${Group.Member[${iGroupMemberCOH}].CleanName} ${iGroupMemberCOH} ${sGroupMembersAlreadyCoHd} ${Bool[${sGroupMembersAlreadyCoHd.Find[${Group.Member[${iGroupMemberCOH}].CleanName},]}]}
 			/if (${Select[${Group.Member[${iGroupMemberCOH}].Type},PC]} == 1 && !${Bool[${sGroupMembersAlreadyCoHd.Find[${Group.Member[${iGroupMemberCOH}].CleanName},]}]} ) {
 				:waitforCoHReady
@@ -123,6 +125,7 @@ Sub PerformCoHOnTarget(string sTargetName)
     /declare iCoHTargetID    int        local    0
     | I am always Group.Member[0], so start with index 1.
     /for iGroupMember 1 to ${Group.Members}
+ /if (${Group.Members}==0) /break
     /if ( ${Group.Member[${iGroupMember}].CleanName.Equal[${sTargetName}]} ) {
         /varset iCoHTargetID  ${Group.Member[${iGroupMember}].ID}
     } else {

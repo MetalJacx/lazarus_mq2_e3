@@ -32,6 +32,7 @@ sub event_petWeapons(line, ChatSender)
     /declare p int local
     |if distribute, give to everyone, else just give to the single chatsender
     /for p 1 to ${SpawnCount[pcpet radius 50]}
+ /if (${SpawnCount[pcpet radius 50]}==0) /break
       /if (!${NearestSpawn[${p},pcpet].Name.Find[familiar]}) {
         |/echo ${p} ${NearestSpawn[${p},pcpet]} ${NearestSpawn[${p},pcpet].Name} ${NearestSpawn[${p},pcpet].Master} ${c_eventArgChatSender}
         |/echo los ${NearestSpawn[${p},pcpet].LineOfSight} d ${Bool[${line.Find[Distribute]}]}
@@ -397,6 +398,7 @@ SUB give_PetsWeapons(autoWeap)
   /declare DebugPetWeapons bool local false
 
   /for p 1 to ${petIDArray.Size}
+ /if (${petIDArray.Size}==0) /break
     |/echo ${p}-${petIDArray[${p}]}-${Spawn[id ${petIDArray[${p}]}].Name}-${Spawn[id ${petIDArray[${p}]}].Master}
     /if (${SpawnCount[id ${petIDArray[${p}]}]}) {
       /varset allWeapSuccess TRUE
@@ -404,6 +406,7 @@ SUB give_PetsWeapons(autoWeap)
       /call TrueTarget ${petIDArray[${p}]}
       /if (${Target.ID} && ${Target.Distance}>19) /call MoveToLoc ${Target.Y} ${Target.X} 50 15
         /for w 1 to ${petItems2D.Size[1]}
+ /if (${petItems2D.Size[1]}==0) /break
           :SummonWeap_Loop
           /if (${petItems2D[${w},${iCastName}].Equal["Blazing Stone of Demise"]} && ${FindItemCount[=Summoned: Burning Shank]}) {
             /call SwapItem "Summoned: Burning Shank" "Cursor"
@@ -506,6 +509,7 @@ SUB check_SummonItems
       /declare petID int local
       /if (${Defined[petIDArray]}) /deletevar petIDArray
       /for p 1 to ${SpawnCount[pcpet radius 100]}
+ /if (${SpawnCount[pcpet radius 100]}==0) /break
         /varset masterName ${NearestSpawn[${p},pcpet].Master}
         /varset petName ${NearestSpawn[${p},pcpet].CleanName}
         /varset petID ${NearestSpawn[${p},pcpet].ID}
@@ -538,6 +542,7 @@ SUB event_auto_coh(line, ChatSender, toggleCoH)
     /if (${Bool[${Group.Member[${ChatSender}]}]}) {
       /if (${Defined[cohTargets]}) {
         /for i 1 to ${cohTargets.Size}
+ /if (${cohTargets.Size}==0) /break
           /if (${cohTargets[${i}].Equal[${ChatSender}]}) {
             /docommand ${ChatToggle} ${ChatSender} is already in the AutoCoH array
             /return
@@ -562,6 +567,7 @@ SUB check_CoH
     /declare t int local
     /declare s int local
     /for t 1 to ${cohTargets.Size}
+ /if (${cohTargets.Size}==0) /break
       /if (${Bool[${Group.Member[${cohTargets[${t}]}]}]}) {
         /for s 1 to ${cohSpells2D.Size[1]}     
 		  /if (${Debug_MAG}) /echo Checking ${cohTargets[${t}]}

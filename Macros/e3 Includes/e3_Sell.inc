@@ -31,6 +31,7 @@ SUB EVENT_syncInventory
 
 	| Check inventory slots 1 - ${numInventorySlots} for items, and containers.
 	/for i 1 to ${numInventorySlots}
+ /if (${numInventorySlots}==0) /break
 	
 		| If there is an item in inventory slot ${i}
 		/if (${Bool[${InvSlot[pack${i}].Item}]}) {
@@ -40,6 +41,7 @@ SUB EVENT_syncInventory
 			/if (${InvSlot[pack${i}].Item.Container}) {
 			
 				/for x 1 to ${InvSlot[pack${i}].Item.Container}
+ /if (${InvSlot[pack${i}].Item.Container}==0) /break
 			
 					/if (${Bool[${Me.Inventory[pack${i}].Item[${x}]}]}) /call get_lootSetting "pack${i}" "${x}"
 					
@@ -117,6 +119,7 @@ SUB openBags
 	/declare miscTimer timer local
 	
 	/for i 1 to ${numInventorySlots}
+ /if (${numInventorySlots}==0) /break
 		
 		/varset miscTimer 30
 		/if (${Me.Inventory[pack${i}].Container}) {
@@ -159,6 +162,7 @@ SUB closeBags
 	/declare miscTimer timer local
 	
 	/for i 1 to ${numInventorySlots}
+ /if (${numInventorySlots}==0) /break
 		
 		/varset miscTimer 30
 		/if (${Me.Inventory[pack${i}].Container}) {
@@ -266,6 +270,7 @@ SUB sellItems
 	
 	| Scan inventory for items to sell
 	/for i 1 to ${numInventorySlots}
+ /if (${numInventorySlots}==0) /break
 	
 		/if (${Bool[${Me.Inventory[pack${i}]}]}) {
 		
@@ -274,6 +279,7 @@ SUB sellItems
 			
 				| Look at each bag slot for items to sell
 				/for e 1 to ${Me.Inventory[pack${i}].Container}
+ /if (${Me.Inventory[pack${i}].Container}==0) /break
 				
 					/if (${Bool[${Me.Inventory[pack${i}].Item[${e}]}]}) {
 					
@@ -453,10 +459,12 @@ SUB destroyItems
 	/declare badItem string local
 	
 	/for i 1 to ${DestroyableItems.Size}
+ /if (${DestroyableItems.Size}==0) /break
 	
 		/varset badItem ${DestroyableItems[${i}]}
 
 		/for e 1 to ${numInventorySlots}
+ /if (${numInventorySlots}==0) /break
 		
 			/if (!${Me.Inventory[pack${e}].Container}) {
 				
@@ -489,6 +497,7 @@ SUB destroyItems
 			} else {
 			
 				/for y 1 to ${Me.Inventory[pack${e}].Container}
+ /if (${Me.Inventory[pack${e}].Container}==0) /break
 				
 					/if (${badItem.Equal[${Me.Inventory[pack${e}].Item[${y}]}]}) {
 					

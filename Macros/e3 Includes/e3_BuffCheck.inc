@@ -40,6 +40,7 @@ sub buffBotsInstant(ArrayName)
 	/declare currentSongs		string local
 
  /for s 1 to ${${ArrayName}.Size[1]}
+ /if (${${ArrayName}.Size[1]}==0) /break
 	/if (${Debug} || ${Debug_BuffCheck}) /echo buffing ${${ArrayName}[${s},${iCastName}]} on ${${ArrayName}[${s},${iCastTarget}]} checkFor ${${ArrayName}[${s},${iCheckFor}]}
 
   /varset buffTargetID ${Me.ID}
@@ -64,7 +65,7 @@ sub buffBotsInstant(ArrayName)
     /if (!(${Bool[${Me.Buff[${${ArrayName}[${s},${iCastName}]}]}]}|| ${Bool[${Me.Song[${${ArrayName}[${s},${iCastName}]}]}]})) {
       /if (${Me.PctEndurance} >= ${${ArrayName}[${s},${iMinEnd}]} && ${Spell[${${ArrayName}[${s},${iCastName}]}].EnduranceCost} <= ${Me.Endurance}) {
               /call check_Ready "${ArrayName}" ${s}
-              /if (${c_Ready}) {
+               /if (${c_Ready} && ${${ArrayName}[${s},${iIfs}]}) {
                 /if (!${Bool[${Target.ID}]}) /call TrueTarget ${buffTargetID}
                 /call castSimpleSpell "${${ArrayName}[${s},${iCastName}]}" 0
               }
@@ -73,12 +74,13 @@ sub buffBotsInstant(ArrayName)
     |/call meleeCombatBuffs "${ArrayName}" ${s}
     /goto :skipBuff
   }
-
+   
   |------- Self ------|
     /if (!${Bool[${Me.Buff[${buffSpellName}]}]} || (${Bool[${Me.Buff[${buffSpellName}]}]} && ${Me.Buff[${buffSpellName}].Duration.TotalSeconds} <= ${buffRecastTime})) {
     /if (!${Bool[${Me.Song[${buffSpellName}]}]} && !${Bool[${Me.Song[${buffCheckForName}]}]}) {
       /if ((${Spell[${buffSpellID}].NewStacks}) && !${Bool[${Me.Buff[${buffCheckForName}]}]}) {
         /call check_Ready "${ArrayName}" ${s}
+       
         /if (${c_Ready} && ${${ArrayName}[${s},${iIfs}]}) {
           /if (${check_Mana["${ArrayName}",${s}]}) {
             |/echo CAST TYPE ${${ArrayName}[${s},${iTargetType}]}
@@ -110,6 +112,7 @@ SUB buffBots(ArrayName)
 	/declare currentSongs		string local
 
  /for s 1 to ${${ArrayName}.Size[1]}
+ /if (${${ArrayName}.Size[1]}==0) /break
 	/if (${Debug} || ${Debug_BuffCheck}) /echo buffing ${${ArrayName}[${s},${iCastName}]} on ${${ArrayName}[${s},${iCastTarget}]} checkFor ${${ArrayName}[${s},${iCheckFor}]}
 
 	/if (${Select[${ArrayName},InstantBuffs2D,SelfBuffs2D]}) {
@@ -222,7 +225,8 @@ SUB buffBots(ArrayName)
   /doevents bark
   /doevents BackOff
   /doevents Assist
- /if (!${ActionTaken}) /next s
+ /if (${ActionTaken}) /break
+ /next s
 /if (${Debug} || ${Debug_BuffCheck}) /echo <== buffBots -|
 /RETURN
 
@@ -269,6 +273,7 @@ SUB buffProcs
     /declare g int local
 
     /for s 1 to ${ProcBuffs2D.Size[1]}
+ /if (${ProcBuffs2D.Size[1]}==0) /break
       /for g 0 to ${Math.Calc[${Group.GroupSize}-1]} | include 0 so you can self proc buff
         /if (${Group.Member[${g}].ID}) {
           /if (${procBuffClass.Find[${Group.Member[${g}].Class.ShortName}]}) {
@@ -294,7 +299,8 @@ SUB buffProcs
       /doevents bark
       /doevents BackOff
       /doevents Assist
-      /if (!${ActionTaken}) /next g
+      /if (${ActionTaken}) /break
+ /next g
     /if (!${ActionTaken})  /next s
   }
 /if (${Debug} || ${Debug_BuffCheck}) /echo <==  buffProcs -|
@@ -307,6 +313,7 @@ SUB checkAuras
   /if ((${Bool[${Me.AltAbility[Spirit Mastery]}]} || ${Bool[${Me.AltAbility[Auroria Mastery]}]}) && !${Bool[${Me.Aura[2]}]}) {
     /declare s int local
     /for s 1 to ${auraSpells2D.Size[1]}
+ /if (${auraSpells2D.Size[1]}==0) /break
       /if (!${Bool[${Me.Aura[${auraSpells2D[${s},${iSpellName}]}]}]}) {
         /declare previousSpell string local ${Me.Gem[${DefaultGem}]}
         /call check_Ready "auraSpells2D" ${s}
@@ -566,6 +573,7 @@ SUB buff_SpellArrays
   /declare s int local
   /if (${Defined[InstantBuffs2D]}) {
     /for s 1 to ${InstantBuffs2D.Size[1]}
+ /if (${InstantBuffs2D.Size[1]}==0) /break
     /if (${InstantBuffs2D[${s},${iMyCastTime}]} > 100) {
       /popup *** Instant buff [${InstantBuffs2D[${s},${iCastName}]}] has a cast time > .1 second, ending macro on ${Me.Name} ***
       /bc *** Instant buff [${InstantBuffs2D[${s},${iCastName}]}] has a cast time > .1 second, ending macro on ${Me.Name} ***
@@ -576,6 +584,7 @@ SUB buff_SpellArrays
 
   /if (${Defined[GroupBuffs2D]}) {
     /for s 1 to ${GroupBuffs2D.Size[1]}
+      /if (${GroupBuffs2D.Size[1]}==0) /break 
       /varset GroupBuffs2D[${s},${iMaxTries}] 2
     /next s
   }

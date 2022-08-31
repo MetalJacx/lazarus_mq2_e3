@@ -25,6 +25,7 @@ SUB EVENT_dead
 		/if (${Wait4RezAlert}) {
 			/declare a int local
 			/for a 1 to ${Wait4RezAlert}
+ /if (${Wait4RezAlert}==0) /break
 				/beep
 				/delay 1
 			/next a
@@ -92,6 +93,7 @@ SUB Wait4Rez(functionCall)
 	/echo Awaiting rez: auto-accepting, and looting my corpse...
 	|Consent NetBots.
 	/for i 1 to ${NetBots.Counts}
+ /if (${NetBots.Counts}==0) /break
 	  /delay 2
 		/consent ${NetBots.Client[${i}]}
 	/next i

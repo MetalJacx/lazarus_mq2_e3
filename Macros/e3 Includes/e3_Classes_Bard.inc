@@ -414,6 +414,7 @@ SUB EVENT_startMelody(line, ChatSender, melodyName)
           /declare i int local
           | For 1 to 7 (maximum melody size to include selos, 6 songs played actively with some droppage)
           /for i 1 to ${melodyArray.Size}
+ /if (${melodyArray.Size}==0) /break
             |/echo ${i} ${melodyArray[${i}]}
             /if (${melodyArray[${i}].Length} && ${melodyArray[${i}].NotEqual[PLACEHOLDER]}) {
               /varset spellName ${melodyArray[${i}].Arg[1,/]}
@@ -611,6 +612,7 @@ Sub check_bard_charm
     /if (!${Bool[${Me.Pet.ID}]}) {
       /bc [+r+] << ${Spawn[id ${charmTarget}].CleanName} is not Charmed! >> [+r+]
       /for s 1 to ${charmArray2D.Size[1]}
+ /if (${charmArray2D.Size[1]}==0) /break
       /call check_Ready "charmArray2D" ${s}
       /if (${c_Ready}) {
         /if (${check_Mana["charmArray2D",${s}]}) {
@@ -635,6 +637,7 @@ Sub check_bard_charm
     } else {
       |accounce time left on charm
       /for s 1 to ${charmArray2D.Size[1]}
+ /if (${charmArray2D.Size[1]}==0) /break
       /if (${Bool[${Me.PetBuff[${charmArray2D[${s},${iSpellName}]}]}]}) {
         /varset charmDuration ${Pet.BuffDuration[${charmArray2D[${s},${iSpellName}]}].TotalSeconds}
         |/echo charmduration ${charmDuration} timer ${charmBuffTimer}
@@ -674,12 +677,14 @@ sub check_bard_mez
       /return
     }
     /for i 1 to ${SpawnCount[playerstate 4 npc targetable radius ${AE_Radius}]}
+ /if (${SpawnCount[playerstate 4 npc targetable radius ${AE_Radius}]}==0) /break
       /varset mezTarg ${NearestSpawn[${i},playerstate 4 npc targetable radius ${AE_Radius}].ID}
       /if (${Spawn[id ${mezTarget}].CleanName.Find[' pet]}) /next i
       /call TrueTarget ${mezTarg}
       /delay 1s ${Target.BuffsPopulated}
       /if (${Select[${AssistTarget},${mezTarg}]}==0 && (!${Bool[${Target.Mezzed}]} || ${Target.Mezzed.Duration.TotalSeconds} < 7)) {
         /for s 1 to ${mezArray2D.Size[1]}
+ /if (${mezArray2D.Size[1]}==0) /break
           /if (${check_Distance[${mezTarg},${mezArray2D[${s},${iMyRange}]}]}) {
             /if (${mezArray2D[${s},${iCastType}].Equal[Spell]} && !${Bool[${Me.Gem[${mezArray2D[${s},${iCastName}]}]}]}) /call memorize_spell "${mezArray2D[${s},${iCastName}]}" ${mezArray2D[${s},${iSpellGem}]}
               /docommand ${ChatToggle} << Mezzing ${mezTarg} with ${mezArray2D[${s},${iCastName}]} >>
@@ -692,9 +697,11 @@ sub check_bard_mez
 
               /if (${returnTwist}) /call unpauseTwist
             }
-        /if (!${ActionTaken}) /next s
+        /if (${ActionTaken}) /break
+ /next s
       }
-    /if (!${ActionTaken}) /next i
+    /if (${ActionTaken}) /break
+ /next i
   }
   /if (${Debug}) /echo <== check_Mez -|
 /return
@@ -721,6 +728,7 @@ SUB melodyIfs
   /declare i int local
   /declare newIfMelody string local 
   /for i 1 to ${melodyIfs.Size[1]}
+ /if (${melodyIfs.Size[1]}==0) /break
     /varset newIfMelody ${melodyIfs[${i},1]}
     /if (!${currentMelody.Equal[${newIfMelody}]} && (${melodyIfs[${i},2]})) {
        
@@ -802,6 +810,7 @@ Sub BRD_Setup
     /declare melodyIfs[${melodyIfArray.Size},2] string outer 0
     /declare i int local
     /for i 1 to ${melodyIfArray.Size[1]}
+ /if (${melodyIfArray.Size[1]}==0) /break
       /varset melodyIfs[${i},1] ${melodyIfArray[${i}].Arg[1,/]}
       /call argueString Ifs| "${melodyIfArray[${i}]}"
       /varset melodyIfs[${i},2] ${Ini[${Character_Ini},Ifs,${c_argueString},NULL,noparse]}
@@ -870,6 +879,7 @@ SUB dynamoTwist
     /declare castTime int local 33
 
     /for i 1 to ${melodyArray.Size}
+ /if (${melodyArray.Size}==0) /break
       /varset spellName ${melodyArray[${i}].Arg[1,/]}
       /varset castName ${spellName}
       /varset ifsPassed TRUE

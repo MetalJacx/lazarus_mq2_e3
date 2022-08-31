@@ -972,6 +972,7 @@ SUB EVENT_vetAA(line, ChatSender,vetAAtoUse)
 
   /declare i int local
   /for i 1 to ${vetArray2D.Size[1]}
+ /if (${vetArray2D.Size[1]}==0) /break
   /if (${vetArray2D[${i},${iCastName}].Equal[${vetAAtoUse}]}) {
     /call check_Ready "vetArray2D" ${i}
     /if (${c_Ready}) {
@@ -1188,6 +1189,7 @@ Sub casting_Setup
 
 		/echo Items to keep timers on.
 		/for index 1 to ${itemCooldownLookupList.Size[1]}
+ /if (${itemCooldownLookupList.Size[1]}==0) /break
 
 			/echo ${index} ) ${itemCooldownLookupList[${index},1]}
 
@@ -1205,6 +1207,7 @@ sub casting_ItemCooldown(itemName)
 	/declare returnValue int local 2
 	/declare i int local 0
 	/for i 1 to ${itemCooldownLookupList.Size[1]}
+ /if (${itemCooldownLookupList.Size[1]}==0) /break
 
 			/if (${itemCooldownLookupList[${i},1].Equal[${itemName}]}) {
 				/varset returnValue ${itemCooldownLookupList[${i},2]}

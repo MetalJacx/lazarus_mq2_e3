@@ -2,6 +2,7 @@ Sub Main
 
 /declare c int local
 /for c 1 to ${SpawnCount[pccorpse radius 100]}
+ /if (${SpawnCount[pccorpse radius 100]}==0) /break
 	/target id ${NearestSpawn[${c},pccorpse radius 100].ID}
 	/delay 3
     /say #cast 994
@@ -17,6 +18,7 @@ Sub Type(InStr)
   /declare char string local
   /declare loopctr int local
   /for loopctr 1 to ${InStr.Length}
+ /if (${InStr.Length}==0) /break
   /varset char ${InStr.Mid[${loopctr},1]}
   /if (!${char.Length}) {
     /nomodkey /keypress space chat

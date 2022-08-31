@@ -88,6 +88,7 @@ SUB peelTank
   |Randomly Iterate forward or backwards
   /if (${Math.Rand[2]}==0) {
     /for t 1 to ${NetBots.Counts}
+ /if (${NetBots.Counts}==0) /break
   } else {
     /for t ${NetBots.Counts} downto 1
   }
@@ -97,6 +98,7 @@ SUB peelTank
     /if (${Select[${NetBots[${currClient}].Class.ShortName},CLR,DRU,SHM]} && ${Bool[${NetBots[${currClient}].InZone}]} && ${NetBots[${currClient}].PctHPs} <= 95) {
       |/echo ${currClient}:${NetBots[${currClient}].PctHPs} is a Priest in need of peeling
       /for i 1 to ${SpawnCount[playerstate 4 npc targetable radius ${AE_Radius} zradius 25]}
+ /if (${SpawnCount[playerstate 4 npc targetable radius ${AE_Radius} zradius 25]}==0) /break
         /varset peelTarget ${NearestSpawn[${i},playerstate 4 npc targetable radius ${AE_Radius} zradius 25].ID}
         /call TrueTarget ${peelTarget}
         /delay 1s ${Target.BuffsPopulated}

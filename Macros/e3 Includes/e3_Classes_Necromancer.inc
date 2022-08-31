@@ -99,6 +99,7 @@ SUB check_manaDump
     /declare s int local
 
     /for s 1 to ${manaDump_Spells2D.Size[1]}
+ /if (${manaDump_Spells2D.Size[1]}==0) /break
       /call check_Ready "manaDump_Spells2D" ${s}
       /if (${c_Ready}) {
         /if (${check_Mana["manaDump_Spells2D",${s}]}) {
@@ -109,12 +110,14 @@ SUB check_manaDump
 
     /if (${manaDumpSpellIndex} > 0 ) {
       /for i 1 to ${whoto_manaDump.Size}
+ /if (${whoto_manaDump.Size}==0) /break
         /if (${check_Distance[${NetBots[${whoto_manaDump[${i}].Arg[1,/]}].ID},${manaDump_Spells2D[${manaDumpSpellIndex},${iMyRange}]}]}) {
         	/if (${NetBots[${whoto_manaDump[${i}].Arg[1,/]}].PctMana} <= ${whoto_manaDump[${i}].Arg[2,/]}) {
           	/call e3_Cast ${NetBots[${whoto_manaDump[${i}].Arg[1,/]}].ID} "manaDump_Spells2D" ${manaDumpSpellIndex}
           }
 				}
-			/if (!${ActionTaken}) /next i
+			/if (${ActionTaken}) /break
+ /next i
     }
   }
 /if (${Debug}) /echo <== check_manaDump -|

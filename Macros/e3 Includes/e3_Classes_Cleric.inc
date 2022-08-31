@@ -33,19 +33,23 @@ sub check_DivineArb
       /declare i int local
       /declare s int local
       /for i 0 to ${Group}
+ /if (${Group}==0) /break
         /if (${SpawnCount[pc ${Group.Member[${i}]}]}) {
           /if (${SpawnCount[ID ${Spawn[${Group.Member[${i}]}].ID} radius 70]} > 0 && ${NetBots[${Group.Member[${i}]}].Zone} == ${Zone.ID} && (${NetBots[${Group.Member[${i}]}].PctHPs} < ${DivineArb_Pct} || ${Spawn[pc ${Group.Member[${i}]}].PctHPs} < ${DivineArb_Pct})) {
         /for s 1 to ${dArbArray2D.Size[1]}
+ /if (${dArbArray2D.Size[1]}==0) /break
         /call check_Ready "dArbArray2D" ${s}
         /if (${c_Ready}) {
           /if (${Me.Casting.ID}) /call interrupt
           /bc [+g+] Casting ${dArbArray2D[${s},${iCastName}]} for ${Group.Member[${i}]}-NB:${NetBots[${Group.Member[${i}]}].PctHPs},SP:${Spawn[pc ${Group.Member[${i}]}].PctHPs}
           /call e3_Cast ${Me.ID} "dArbArray2D" ${s}
               }
-        /if (!${ActionTaken}) /next s
+        /if (${ActionTaken}) /break
+ /next s
           }
         }
-      /if (!${ActionTaken}) /next i
+      /if (${ActionTaken}) /break
+ /next i
     }
   }
 /if (${Debug}) /echo <== check_DivineArb -|
@@ -59,6 +63,7 @@ sub check_celestialRegen
     /declare i int local
     | Count group members in zone
     /for i 0 to ${Group}
+ /if (${Group}==0) /break
       /if (${SpawnCount[pc ${Group.Member[${i}]}]}) {
         /varcalc averageHP ${averageHP} + ${If[${NetBots[${Group.Member[${i}]}].ID},${NetBots[${Group.Member[${i}]}].PctHPs},${Group.Member[${i}].PctHPs}]}
         /varcalc groupSize ${groupSize} + 1
@@ -137,7 +142,9 @@ SUB EVENT_AE_Rez(line, ChatSender)
     /declare corpseID int local
 
     /for n 1 to ${numIterations}
+ /if (${numIterations}==0) /break
       /for i 1 to ${CorpseListSize}
+ /if (${CorpseListSize}==0) /break
         /varset canRez 0
         /varset corpseID ${CorpseListPriority[${i}]}
         /varset playerName ${Spawn[id ${corpseID}].CleanName}
@@ -247,12 +254,14 @@ Sub BuildCorpseList
   /varset CorpseListSize 0
   /if (!${SpawnCount[pccorpse radius 100]}) /return
   /for c 1 to ${SpawnCount[pccorpse radius 100]}
+ /if (${SpawnCount[pccorpse radius 100]}==0) /break
     /varset cID ${NearestSpawn[${c},pccorpse radius 100].ID}
       /varcalc CorpseListSize ${CorpseListSize}+1
       /varset CorpseList[${CorpseListSize}] ${cID}
   /next c
   |add clr
   /for c 1 to ${CorpseListSize}
+ /if (${CorpseListSize}==0) /break
     /if (${Spawn[id ${CorpseList[${c}]}].Class.ShortName.Equal[CLR]}) {
       /varset CorpseListPriority[${p}] ${CorpseList[${c}]}
       /varcalc p ${p}+1
@@ -260,6 +269,7 @@ Sub BuildCorpseList
   /next c
   |add war/dru/shm
   /for c 1 to ${CorpseListSize}
+ /if (${CorpseListSize}==0) /break
   /if (${Select[${Spawn[id ${CorpseList[${c}]}].Class.ShortName},DRU,SHM,WAR]}) {
     /varset CorpseListPriority[${p}] ${CorpseList[${c}]}
     /varcalc p ${p}+1
@@ -267,6 +277,7 @@ Sub BuildCorpseList
   /next c
   |add bst,enc,pal,rng,shd
   /for c 1 to ${CorpseListSize}
+ /if (${CorpseListSize}==0) /break
   /if (${Select[${Spawn[id ${CorpseList[${c}]}].Class.ShortName},PAL,SHD,RNG,BST,ENC,MAG,WIZ,NEC]}) {
     /varset CorpseListPriority[${p}] ${CorpseList[${c}]}
     /varcalc p ${p}+1
@@ -274,12 +285,14 @@ Sub BuildCorpseList
   /next c
   |add the rest
   /for c 1 to ${CorpseListSize}
+ /if (${CorpseListSize}==0) /break
   /if (${Select[${Spawn[id ${CorpseList[${c}]}].Class.ShortName},ROG,MNK,BER,BRD]}) {
     /varset CorpseListPriority[${p}] ${CorpseList[${c}]}
     /varcalc p ${p}+1
   }
   /next c
 |  /for c 1 to ${CorpseListSize}
+ /if (${CorpseListSize}==0) /break
 |    /echo c ${c}:  cl-${CorpseList[${c}]}-${Spawn[id ${CorpseList[${c}]}].Name} clp ${CorpseListPriority[${c}]}-${Spawn[id ${CorpseListPriority[${c}]}].Name}
 |  /next c
 /return
@@ -318,6 +331,7 @@ Sub defineRezSpell
     /if (${rezArray.Size}) {
       /call BuildSpellArray "rezArray" "rezArray2D"
       /for i 1 to ${rezArray2D.Size[1]}
+ /if (${rezArray2D.Size[1]}==0) /break
         /varset rezArray2D[${i},${iCastInvis}] 1
       /next i
       }
@@ -456,6 +470,7 @@ sub event_petHammer(line, ChatSender)
     /declare p int local
     |if distribute, give to everyone, else just give to the single chatsender
     /for p 1 to ${SpawnCount[pcpet radius 100]}
+ /if (${SpawnCount[pcpet radius 100]}==0) /break
       /if (!${NearestSpawn[${p},pcpet].Name.Find[familiar]}) {
         |/echo ${p} ${NearestSpawn[${p},pcpet]} ${NearestSpawn[${p},pcpet].Name} ${NearestSpawn[${p},pcpet].Master} ${c_eventArgChatSender}
         |/echo los ${NearestSpawn[${p},pcpet].LineOfSight} d ${Bool[${line.Find[Distribute]}]}
@@ -491,6 +506,7 @@ SUB give_PetsHammer(autoWeap)
   /declare retryWeapTimer timer local 14s
 
   /for p 1 to ${petIDArray.Size}
+ /if (${petIDArray.Size}==0) /break
     |/echo ${p}-${petIDArray[${p}]}-${Spawn[id ${petIDArray[${p}]}].Name}-${Spawn[id ${petIDArray[${p}]}].Master}
     /if (${SpawnCount[id ${petIDArray[${p}]}]}) {
       /varset allWeapSuccess TRUE
@@ -498,6 +514,7 @@ SUB give_PetsHammer(autoWeap)
       /call TrueTarget ${petIDArray[${p}]}
       /if (${Target.ID} && ${Target.Distance}>19) /call MoveToLoc ${Target.Y} ${Target.X} 50 15
         /for w 1 to ${petItems2D.Size[1]}
+ /if (${petItems2D.Size[1]}==0) /break
           :SummonWeap_Loop
           /if (${petItems2D[${w},${iCastName}].Equal["Blazing Stone of Demise"]} && ${FindItemCount[=Summoned: Burning Shank]}) {
             /call SwapItem "Summoned: Burning Shank" "Cursor"
@@ -580,6 +597,7 @@ SUB check_SummonItems
       /declare petID int local
       /if (${Defined[petIDArray]}) /deletevar petIDArray
       /for p 1 to ${SpawnCount[pcpet radius 100]}
+ /if (${SpawnCount[pcpet radius 100]}==0) /break
         /varset masterName ${NearestSpawn[${p},pcpet].Master}
         /varset petName ${NearestSpawn[${p},pcpet].CleanName}
         /varset petID ${NearestSpawn[${p},pcpet].ID}

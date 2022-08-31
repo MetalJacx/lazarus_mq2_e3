@@ -2,11 +2,11 @@
 Sub IniToVarV(Ini_Key, VarToMake, VarType)
   /if (${Defined[${VarToMake}]}) /deletevar ${VarToMake}
   /if (${VarType.Equal[bool]}) {
-    /declare ${VarToMake} bool outer ${If[${Select[${IniExt[${Ini_Key}]},TRUE,ON,YES,1]},TRUE,FALSE]}
+    /declare ${VarToMake} bool outer ${If[${Select[${Ini[${Ini_Key}]},TRUE,ON,YES,1]},TRUE,FALSE]}
     /return ${${VarToMake}}
   } else {
-    /if (${IniExt[${Ini_Key}].Length}) {
-      /declare ${VarToMake} ${VarType} outer ${IniExt[${Ini_Key}]}
+    /if (${Ini[${Ini_Key}].Length}) {
+      /declare ${VarToMake} ${VarType} outer ${Ini[${Ini_Key}]}
       /return ${${VarToMake}}
     }
   }
@@ -18,30 +18,42 @@ Sub IniToArrayV(IniKey, ArrayName)
   /declare j int local 1
   /declare array_size int local 0
   /declare ArrayScope string local outer
-  /if (${IniKey.Right[1].Equal[#]} && ${IniExt[${IniKey}1].Length}) {
-    /call IniToArray_Deprecated "${IniKey}" "${ArrayName}"
-    /return
-  }
-  /if (${IniKey.Right[1].Equal[#]}) /varset IniKey ${IniKey.Left[-1]}
-  |/echo IniKey = ${IniKey} count = ${IniExt[${IniKey}].Count}
+  /declare totalKeys int local 0
+  |/if (${IniKey.Right[1].Equal[#]} && ${IniExt[${IniKey}1].Length}) {
+  |  /call IniToArray_Deprecated "${IniKey}" "${ArrayName}"
+  |  /return
+  |}
+  
+  |example key: "${Character_Ini},DoTs on Assist,Main#"
+  |strip off the # from the call
+ /if (${IniKey.Right[1].Equal[#]}) /varset IniKey ${IniKey.Left[-1]}
+  
   /if (${Defined[${ArrayName}]}) /deletevar ${ArrayName}
-  /if (${IniExt[${IniKey}].Index[1].Length}) {
-    /for i 1 to ${IniExt[${IniKey}].Count}
-    /if (${IniExt[${IniKey}].Index[${i}].Length}) {
+  /varset totalKeys ${Ini[${IniKey}#-1]}
+  /if (${totalKeys}>0) {
+    /for i 0 to ${Math.Calc[${totalKeys}-1]}
+ /if (${Math.Calc[${totalKeys}-1]}==0) /break
+    /if (${Ini[${IniKey}#${i}].Length}) {
       /varcalc array_size ${array_size}+1
     }
     /next i
     |/declare ${ArrayName}[${IniExt[${IniKey}].Count}] string ${ArrayScope}
+	/echo Creating non-empty array: ${ArrayName} with size: ${array_size}
     /declare ${ArrayName}[${array_size}] string outer
-    /if (${IniExt[${IniKey}].Count}) {
-      /for i 1 to ${IniExt[${IniKey}].Count}
+    /if (${totalKeys}>0) {
+      /for i 0 to ${Math.Calc[${totalKeys}-1]}
+ /if (${Math.Calc[${totalKeys}-1]}==0) /break
       |/echo ${ArrayName}[${i}] ${IniExt[${IniKey}].Index[${i}]} Length: ${IniExt[${IniKey}].Index[${i}].Length}
-      /if (${IniExt[${IniKey}].Index[${i}].Length}) {
-        /varset ${ArrayName}[${j}] ${IniExt[${IniKey}].Index[${i}]}
+      /if (${Ini[${IniKey}#${i}].Length}) {
+        /varset ${ArrayName}[${j}] ${Ini[${IniKey}#${i}]}
         /varcalc j ${j}+1
       }
       /next i
     }
+  } else {
+	/echo Creating empty array: ${ArrayName}
+	/if (${Defined[${ArrayName}]}) /deletevar ${ArrayName}
+	/declare ${ArrayName}[0] string outer
   }
 /return
 
@@ -61,6 +73,7 @@ Sub IniToArray_Deprecated(IniKey, ArrayName)
     }
     /declare ${ArrayName}[${count}] string ${ArrayScope}
     /for i 1 to ${count}
+ /if (${count}==0) /break
     /varset ${ArrayName}[${i}] ${Ini[${IniKey}${i}]}
     /next i
   |} else {
@@ -156,6 +169,7 @@ SUB BuildArray(ArrayName, Data)
 		/declare ${ArrayName}Copy[${${ArrayName}.Size}] string local
 		/declare i int local
 		/for i 1 to ${${ArrayName}.Size}
+ /if (${${ArrayName}.Size}==0) /break
 			/varset ${ArrayName}Copy[${i}] ${${ArrayName}[${i}]}
 		/next i
 		| Delete the existing array.
@@ -163,6 +177,7 @@ SUB BuildArray(ArrayName, Data)
 		| Build a resized array.
 		/declare ${ArrayName}[${Math.Calc[${${ArrayName}Copy.Size}+1].Int}] string outer
 		/for i 1 to ${${ArrayName}.Size}
+ /if (${${ArrayName}.Size}==0) /break
 			/varset ${ArrayName}[${i}] ${${ArrayName}Copy[${i}]}
 		/next i
 		| Insert new data into the array
@@ -180,6 +195,7 @@ SUB ListToArray(ArrayName, Data, delimiter)
 	/varcalc arraySize ${Data.Count[${delimiter}]} +1
 	/if (!${Defined[${ArrayName}]}) /declare ${ArrayName}[${arraySize}] string outer
 	/for i 1 to ${arraySize}
+ /if (${arraySize}==0) /break
 		/varset ${ArrayName}[${i}] ${Data.Arg[${i},${delimiter}]}
 	/next i
 /RETURN ${ArrayName}
@@ -549,8 +565,11 @@ SUB BuildSpellArrayBase(ArrayName, NewArrayName, SkipParams)
 	/if (${Defined[${NewArrayName}]}) /deletevar ${NewArrayName}
 	
 	/declare ${NewArrayName}[${${ArrayName}.Size},${SpellProp.Size}] string outer 0
-	|/echo NA ${NewArrayName} ${ArrayName} ${${ArrayName}.Size} ${SpellProp.Size} ${${NewArrayName}.Size[1]}
+	/echo NA ${NewArrayName} ${ArrayName} ${${ArrayName}.Size} ${SpellProp.Size} ${${NewArrayName}.Size[1]}
 	/declare errMsg string local Review entry and restart macro
+
+	|no need to do work with zero size arrays
+	/if (${${ArrayName}.Size}==0) /return
 
 	/declare i int local
 	|for item information lookup optimization
@@ -563,7 +582,14 @@ SUB BuildSpellArrayBase(ArrayName, NewArrayName, SkipParams)
 	/declare tmp_castname string local
 	/declare tmp_foundItem bool local false
 	|check to see if the spell/aa/etc actually exists.
+	/declare isHealArray bool local ${Select[${ArrayName},tankHeals,importantHeals,allHeals,hotSpells,groupHeals,lifeSupport,petHeal,petHeals,lifeTaps,xtargetHeals]}
+	/echo checking array name: ${ArrayName}
+	/echo isHealArray: ${isHealArray}
+	/echo Skip Params: ${SkipParams}
+	/echo Array Size: ${${ArrayName}.Size}
+	/delay 1
 	/for i 1 to ${${ArrayName}.Size}
+ /if (${${ArrayName}.Size}==0) /break
 		/varset tmp_foundItem False
 
 		/varset tmp_castname ${${ArrayName}[${i}].Arg[1,/]}
@@ -599,12 +625,10 @@ SUB BuildSpellArrayBase(ArrayName, NewArrayName, SkipParams)
 		
 	/next i
 
-	/declare isHealArray bool local ${Select[${ArrayName},tankHeals,importantHeals,allHeals,hotSpells,groupHeals,lifeSupport,petHeal,petHeals,lifeTaps,xtargetHeals]}
-	|/echo checking array name: ${ArrayName}
-	|/echo isHealArray: ${isHealArray}
-	|/echo Skip Params: ${SkipParams}
+
 	/declare isCastTargetArray bool local ${Select[${ArrayName},BotBuffs,PetBuffs,CombatBuffs,cureTargets]}
 	/for i 1 to ${${ArrayName}.Size}
+ /if (${${ArrayName}.Size}==0) /break
 		| get SpellName
 		/varset ${NewArrayName}[${i},${iCastName}] ${${ArrayName}[${i}].Arg[1,/]}
 		| get CastTarget
@@ -1059,6 +1083,7 @@ SUB RemoveSpellArrayElement(ArrayName, ArrayIndex)
 		/for o 1 to ${${ArrayName}.Size[1]}	
 			/if (${o} != ${ArrayIndex}) {
 				/for p 1 to ${SpellProp.Size}
+ /if (${SpellProp.Size}==0) /break
 				  |/echo tempArray[${n},${p}] ${${ArrayName}[${o},${p}]} ${SpellProp[${p}]}
 					/varset tempArray[${n},${p}] ${${ArrayName}[${o},${p}]}
           |/echo tempArray[${n},${p}] ${${ArrayName}[${o},${p}]} ${SpellProp[${p}]}
@@ -1071,7 +1096,9 @@ SUB RemoveSpellArrayElement(ArrayName, ArrayIndex)
 		/declare ${ArrayName}[${tempArraySize},${SpellProp.Size}] string outer
 		
 		/for n 1 to ${tempArraySize}
+ /if (${tempArraySize}==0) /break
 			/for p 1 to ${SpellProp.Size}
+ /if (${SpellProp.Size}==0) /break
 				/varset ${ArrayName}[${n},${p}] ${tempArray[${n},${p}]}
       | /echo ${ArrayName}[${n},${p}] ${${ArrayName}[${n},${p}]} ${SpellProp[${p}]}
 			/next p
@@ -1099,6 +1126,7 @@ SUB RemoveArrayElement(ArrayName, Data)
 	/declare i int local
 	| Count array elements that do not match 'Data'.
 	/for i 1 to ${${ArrayName}.Size}
+ /if (${${ArrayName}.Size}==0) /break
 		/if (${${ArrayName}[${i}].NotEqual[${Data}]}) {
 			/varset remainingElements ${remainingElements}${${ArrayName}[${i}]},
 			/varcalc newArraySize ${newArraySize} + 1
@@ -1108,6 +1136,7 @@ SUB RemoveArrayElement(ArrayName, Data)
 	/if (${newArraySize}) {
 		/declare newArray[${newArraySize}] string local
 		/for i 1 to ${newArraySize}
+ /if (${newArraySize}==0) /break
 			/varset newArray[${i}] ${remainingElements.Arg[${i},,]}
 		/next i
 	}
@@ -1117,6 +1146,7 @@ SUB RemoveArrayElement(ArrayName, Data)
 	/if (${Defined[newArray]}) {
 		/declare ${ArrayName}[${newArray.Size}] string outer
 		/for i 1 to ${newArray.Size}
+ /if (${newArray.Size}==0) /break
 			/varset ${ArrayName}[${i}] ${newArray[${i}]}
 		/next i
 	}
@@ -1129,6 +1159,7 @@ SUB RemoveArrayElements(ArrayName, ArrayIndexes)
   /declare tempArray[${${ArrayName}.Size}] string local 0
 
   /for i 1 to ${${ArrayName}.Size}
+ /if (${${ArrayName}.Size}==0) /break
     |/echo a ${${ArrayName}[${i}]} f ${Bool[${ArrayIndexes.Find[${i},]}]}
     /if (!${Bool[${ArrayIndexes.Find[${i},]}]}) {
       /varcalc n ${n}+1
@@ -1139,6 +1170,7 @@ SUB RemoveArrayElements(ArrayName, ArrayIndexes)
   /if (${n}>0) {
     /declare ${ArrayName}[${n}] string outer
     /for i 1 to ${n}
+ /if (${n}==0) /break
       |/echo ${i} ${n} n ${ArrayName}[${i}] t tempArray[${i}]
       /varset ${ArrayName}[${i}] ${tempArray[${i}]}
     /next i
@@ -1219,6 +1251,7 @@ SUB check_macroTimers
 	/declare SpentTimerCounter int local
 	/declare SpentTimerList string local
 	/for i 1 to ${timerArray.Size}
+ /if (${timerArray.Size}==0) /break
     /if (${Defined[${timerArray[${i}]}]}) {
 		/if (!${${timerArray[${i}]}}) {
         		|/echo Deleting timer: ${timerArray[${i}]}
@@ -1254,6 +1287,7 @@ SUB check_ResistCounters
       /declare s int local
       /declare nameOfCounter string local
       /for s 1 to ${spellResistCountersIndex}
+ /if (${spellResistCountersIndex}==0) /break
       
         /varset nameOfCounter ${spellResistCounters[${s}]}
 	    /if (${Debug}) /echo check_ResistCounterReset checking for defined ${nameOfCounter}
@@ -1403,6 +1437,7 @@ Sub Type(InStr)
   /declare char string local
   /declare loopctr int local
   /for loopctr 1 to ${InStr.Length}
+ /if (${InStr.Length}==0) /break
   /varset char ${InStr.Mid[${loopctr},1]}
   /if (!${char.Length}) {
     /nomodkey /keypress space chat
