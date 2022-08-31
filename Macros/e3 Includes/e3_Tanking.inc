@@ -105,7 +105,7 @@ SUB peelTank
         |/echo checking ${peelTarget} ${Spawn[id ${peelTarget}].Name} for healer target
         /if (${Select[${Me.TargetOfTarget.Class.ShortName},CLR,DRU,SHM]}) {
           /bc [+y+] ${peelTarget} ${Spawn[id ${peelTarget}].Name} is targeting ${Me.TargetOfTarget.Name} : peeling!
-          /netfollow off
+          /afollow off
           /varset peelTankOriginalAssistTarget ${AssistTarget}
           /varset AssistTarget ${peelTarget}
           |/varset doTaunt TRUE

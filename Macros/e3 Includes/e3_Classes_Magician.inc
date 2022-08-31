@@ -49,7 +49,7 @@ sub event_petWeapons(line, ChatSender)
     /next p
     /if (${Defined[petIDArray]}) {
       /if (${Stick.Active}) /squelch /stick off
-      /if (${AdvPath.Status}==1) /squelch /netfollow off
+      /if (${AdvPath.Status}==1) /squelch /afollow off
       /call give_PetsWeapons FALSE
     }
 

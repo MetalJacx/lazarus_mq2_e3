@@ -331,7 +331,7 @@ Sub e3_Cast(int targetID, ArrayName, int ArrayIndex, bool StopEchos, bool NoDela
 		|- Stop following for spell/item/aa with a cast time > 0 MyCastTime, unless im a bard
 		/if (${${ArrayName}[${ArrayIndex},${iMyCastTime}]} >0 && ${Me.Class.ShortName.NotEqual[BRD]}) {
 			/if (${Stick.Status.Equal[on]}) /squelch /stick pause
-			/if (${AdvPath.Following} && ${Following}) /squelch /netfollow off
+			/if (${AdvPath.Following} && ${Following}) /squelch /afollow off
 			/if (${MoveTo.Moving}) /moveto off
 			/delay 3 !${Me.Moving}
 		}

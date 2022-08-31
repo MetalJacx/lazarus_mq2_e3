@@ -346,7 +346,7 @@ SUB event_run_Route(line, ChatSender, route_Name)
       /varset route_From_Ini ${Ini[${SmoothMoves_Ini},${Zone.ShortName},${route_Name}]}
       | Turn off stick.
       /if (${Stick.Active}) /squelch /stick off
-      /if (${AdvPath.Following}) /squelch /netfollow off
+      /if (${AdvPath.Following}) /squelch /afollow off
       | Set route variables.
       /varset i 1
       /varset startZone ${Zone.ID}

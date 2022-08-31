@@ -27,7 +27,7 @@ SUB EVENT_Follow(line, ChatSender, eventParams)
   | -If I am the follow target
   /if (${FollowTarget.Equal[${Me}]}) {
     /if (${Stick.Active}) /squelch /stick off
-    /if (${AdvPath.Following}) /squelch /netfollow off
+    /if (${AdvPath.Following}) /squelch /afollow off
   } else {
     | -Check Range
     /if (${Spawn[=${FollowTarget}].Distance} > ${MaxResponseDist} && ${Bool[${NetBots[${SpawnToFollow}].InZone}]}) {
@@ -58,7 +58,7 @@ SUB AcquireFollow
 		/if (${SpawnCount[=${FollowTarget} radius ${MaxResponseDist}]}) {
 			/if (${FollowTarget.NotEqual[${Me.CleanName}]}) {
 				/if (${Stick.Active}) /squelch /stick off
-				/if (${AdvPath.Following}) /squelch /netfollow off
+				/if (${AdvPath.Following}) /squelch /afollow off
 
 				/declare followTargetID int local
 				/if (${SpawnCount[pc =${FollowTarget}]}) {
@@ -73,7 +73,7 @@ SUB AcquireFollow
 				/if (${NetBots[${FollowTarget}].ID} && ${AdvPath}) {
 					/if (${Spawn[id ${followTargetID}].LineOfSight}) {
 						/call TrueTarget ${followTargetID}
-						/squelch /netfollow on
+						/squelch /afollow on
 					}
 				} else {
 					/if (${Spawn[id ${followTargetID}].LineOfSight}) {
@@ -95,7 +95,7 @@ SUB AcquireFollow
 SUB Bind_StopFollowing(yLoc,xLoc)
   /if (${Stick.Active} || ${AdvPath.Following} || ${Following}) {
     /if (${Stick.Active}) /squelch /stick off
-    /if (${AdvPath.Following}) /squelch /netfollow off
+    /if (${AdvPath.Following}) /squelch /afollow off
     /call MoveToLoc ${yLoc} ${xLoc} 20 20
     /varset FollowTarget
     /varset Following FALSE
@@ -116,7 +116,7 @@ SUB EVENT_Stop(line, ChatSender)
     /delay 1s ${Spawn[${FollowTarget}].Distance} < 25
     | -Stop following
     /if (${Stick.Active}) /squelch /stick off
-    /if (${AdvPath.Following}) /squelch /netfollow off
+    /if (${AdvPath.Following}) /squelch /afollow off
     /varset FollowTarget NULL
     /varset Following FALSE
   }
@@ -137,7 +137,7 @@ SUB EVENT_MoveHere(line, ChatSender, eventParams)
   /if (!${SpawnCount[id ${c_eventArgData}]}) /return
   |turn off following, assist
   /if (${Stick.Active})         /squelch /stick off
-  /if (${AdvPath.Following}) /squelch /netfollow off
+  /if (${AdvPath.Following}) /squelch /afollow off
   /varset FollowTarget  NULL
   /varset Following     FALSE
   /if (${Assisting}  || ${Me.Combat}) /call AssistOff
@@ -190,7 +190,7 @@ SUB EVENT_bark(line, ChatSender, msgTarget, barkMsg)
   }
 
   /if (${Stick.Active}) /squelch /stick off
-  /if (${AdvPath.Following}) /squelch /netfollow off
+  /if (${AdvPath.Following}) /squelch /afollow off
   /if (${Me.Casting.ID} && ${Me.Class.ShortName.NotEqual[BRD]}) /call interrupt
 
   /doevents barkReturn flush
@@ -358,7 +358,7 @@ SUB EVENT_oldclickIt(line, ChatSender, locToStart)
       /declare miscTimer timer local
       /declare startZone int local ${Zone.ID}
       /if (${Stick.Active}) /squelch /stick off
-      /if (${AdvPath.Following}) /squelch /netfollow off
+      /if (${AdvPath.Following}) /squelch /afollow off
       /if (${Me.Casting.ID} && ${Me.Class.ShortName.NotEqual[BRD]}) /call interrupt
       :retryClick
       /if (${Math.Distance[${locToStart}]} > 10) /call MoveToLoc ${locToStart} 30 20
@@ -432,7 +432,7 @@ SUB EVENT_runThruZone(line, ChatSender, eventParams)
       /docommand ${ChatToggle} I am to far away from that zone line.
     } else {
       /if (${Stick.Active}) /squelch /stick off
-      /if (${AdvPath.Following}) /squelch /netfollow off
+      /if (${AdvPath.Following}) /squelch /afollow off
       /if (${Me.Casting.ID} && ${Me.Class.ShortName.NotEqual[BRD]}) /delay 5s !${Me.Casting.ID}
     :retryRTZ
       | -Check if I need to move closer.
@@ -1867,7 +1867,8 @@ sub event_gimme(line, ChatSender, RequestedItem)
       /varset MoltenOrbLimit 0
     }
 
-    /for counter 0 to 5
+    /for counter 0 to ${Group.Members}
+        /if (${Group.Members}==0) /break
         
         /if (${${Group.Member[${counter}]}_GimmeModShard}>0) {
             /varcalc ShardCount_needMore ${ShardCount_needMore}+1
@@ -1894,8 +1895,10 @@ sub event_gimme(line, ChatSender, RequestedItem)
               /bc [${Time}] <Gimme_Event>:Creating Azure Mind Crystal III. Total Requests: ${AzureCount_needMore}
               /call ItemDeleteSummoned  "Azure Mind Crystal III"
               /call castSimpleSpell "Azure Mind Crystal" 0
-              /for counter 0 to 5
+              /for counter 0 to ${Group.Members}
+                /if (${Group.Members}==0) /break
                 /varset ${Group.Member[${counter}]}_GimmeAzureCrystal 0
+
               /next counter
 
           } else /if ( ${Me.CurrentMana}<=8000) {
@@ -1918,7 +1921,8 @@ sub event_gimme(line, ChatSender, RequestedItem)
                 /bc [${Time}] <Gimme_Event>:Creating Sanguine Azure Mind Crystal III. Total Requests: ${SanguineCount_needMore}
                 /call ItemDeleteSummoned  "Sanguine Mind Crystal III"
                 /call castSimpleSpell "Sanguine Mind Crystal" 0
-                /for counter 0 to 5
+                /for counter 0 to ${Group.Members}
+                    /if (${Group.Members}==0) /break
                     /varset ${Group.Member[${counter}]}_GimmeSanguine 0
                   /next counter
 
@@ -1942,7 +1946,8 @@ sub event_gimme(line, ChatSender, RequestedItem)
           /bc [${Time}] <Gimme_Event>:Large Modulation Shard. Total Requests: ${ShardCount_needMore}
           /call ItemDeleteSummoned  "Summoned: Large Modulation Shard"
           /call castSimpleSpell "Large Modulation Shard" 0
-          /for counter 0 to 5
+          /for counter 0 to ${Group.Members}
+                /if (${Group.Members}==0) /break
               /varset ${Group.Member[${counter}]}_GimmeModShard 0
           /next counter
 
@@ -1958,7 +1963,8 @@ sub event_gimme(line, ChatSender, RequestedItem)
               /bc [${Time}] <Gimme_Event>:Molten orb. Total Requests: ${OrbCount_needMore}
               /call ItemDeleteSummoned  "Molten orb"
               /call castSimpleSpell "Summon: Molten Orb" 0
-              /for counter 0 to 5
+              /for counter 0 to ${Group.Members}
+                  /if (${Group.Members}==0) /break
                   /varset ${Group.Member[${counter}]}_GimmeMoltenOrb 0
               /next counter
 
@@ -1998,7 +2004,7 @@ sub event_gimme(line, ChatSender, RequestedItem)
 	/declare IsMyBot bool local ${Bool[${Select[${ChatSender}, ${NetBots.Client}]}]}
 
   /if (!${Defined[GimmeSharing]}) {
-    /if (${Ini[${Character_Ini},Misc,GimmeSharing#-1]} > 0) {
+    /if (${Ini[${Character_Ini},Misc,GimmeSharing?-1]} > 0) {
       /call iniToVarV "${Character_Ini},Misc,GimmeSharing" GimmeSharing bool outer
     } else {
       /declare GimmeSharing bool outer TRUE

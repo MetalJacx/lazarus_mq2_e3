@@ -132,7 +132,7 @@ SUB EVENT_AE_Rez(line, ChatSender)
   /if (!${CorpseListSize}) {
     /echo I couldn't find any corpses to resurrect...
   } else {
-    /if (${AdvPath.Status}==1) /squelch /netfollow off
+    /if (${AdvPath.Status}==1) /squelch /afollow off
     /if (${Stick.Active}) /squelch /stick off
 
     /declare numIterations int local 2
@@ -487,7 +487,7 @@ sub event_petHammer(line, ChatSender)
     /next p
     /if (${Defined[petIDArray]}) {
       /if (${Stick.Active}) /squelch /stick off
-      /if (${AdvPath.Status}==1) /squelch /netfollow off
+      /if (${AdvPath.Status}==1) /squelch /afollow off
       /call give_PetsHammer FALSE
     }
 
