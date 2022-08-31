@@ -74,6 +74,7 @@ SUB AcquireFollow
 					/if (${Spawn[id ${followTargetID}].LineOfSight}) {
 						/call TrueTarget ${followTargetID}
 						/squelch /afollow on
+            
 					}
 				} else {
 					/if (${Spawn[id ${followTargetID}].LineOfSight}) {

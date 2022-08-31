@@ -64,7 +64,7 @@ SUB check_Follow
       /declare followTgtDistance float local ${Spawn[=${FollowTarget}].Distance}
       /declare followTgtLoS bool local ${Spawn[=${FollowTarget}].LineOfSight}
       /if (${followTgtDistance} <= ${LeashLength}) {
-        /if (!${NetAdvPath.Status} && !${Stick.Active}) {
+        /if (!${AdvPath.Status} && !${Stick.Active}) {
           /if (${followTgtDistance}< 40 && ${medBreak}) {
             /if (${Debug} || ${Debug_Background}) /echo not following during medbreak and < 40 dist
           } else {
@@ -75,7 +75,7 @@ SUB check_Follow
         |FollowCheckTimer
       } else /if (${followTgtDistance} > ${LeashLength}) {
         /if (!${FollowCheckTimer}) {
-          /if (!${NetAdvPath.Status} && !${Stick.Active}) {
+          /if (!${AdvPath.Status} && !${Stick.Active}) {
             /bct ${FollowTarget} //popup ${Me} stopped moving! Dist:${followTgtDistance},LoS:${followTgtLoS}
           } else {
             /bct ${FollowTarget} //popup ${Me} is falling behind. Dist:${followTgtDistance},LoS:${followTgtLoS}
