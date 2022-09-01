@@ -106,7 +106,8 @@ SUB check_manaDump
       		/varset manaDumpSpellIndex ${s}
 				}
 			}
-    /if (${manaDumpSpellIndex}==0) /next s
+    /if (${manaDumpSpellIndex}!=0) /break
+    /next s
 
     /if (${manaDumpSpellIndex} > 0 ) {
       /for i 1 to ${whoto_manaDump.Size}

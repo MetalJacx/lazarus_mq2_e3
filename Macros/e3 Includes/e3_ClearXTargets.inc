@@ -43,7 +43,7 @@ SUB clearXTargets_Setup
   /declare KeepAggroOn bool outer FALSE
 
   /if (!${Defined[FollowAfterClearXTargets]}) {
-    /if (${Ini[${Character_Ini},Misc,FollowAfterClearXTargets?-1]} > 0) {
+    /if (${IniExtKey[${Character_Ini},Misc,FollowAfterClearXTargets]} > 0) {
       /call iniToVarV "${Character_Ini},Misc,FollowAfterClearXTargets" FollowAfterClearXTargets bool outer
     } else {
       /declare FollowAfterClearXTargets bool outer TRUE
@@ -53,7 +53,7 @@ SUB clearXTargets_Setup
   /if (${ClearXTargetsDebug}) /echo FollowAfterClearXTargets = ${FollowAfterClearXTargets}
 
   /if (!${Defined[ClearXTargetStickDistance]}) {
-    /if (${Ini[${Character_Ini},Misc,ClearXTargetStickDistance?-1]} > 0) {
+    /if (${IniExtKey[${Character_Ini},Misc,ClearXTargetStickDistance]} > 0) {
       /call iniToVarV "${Character_Ini},Misc,ClearXTargetStickDistance" ClearXTargetStickDistance int outer
     } else {
       /declare ClearXTargetStickDistance int outer 10

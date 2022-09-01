@@ -92,8 +92,10 @@ Sub check_rune
           }
         }
       }
-    /if (!${Bool[${currentBot}]}) /next s
-  /if (!${Bool[${currentBot}]}) /next t
+    /if (${Bool[${currentBot}]}) /break
+    /next s
+    /if (${Bool[${currentBot}]}) /break
+  /next t
 }
 /if (${Debug}) /echo <== check_rune -|
 /return
@@ -185,7 +187,8 @@ Sub check_charm
           }
         }
       }
-      /if (!${Bool[${Me.Pet.ID}]}) /next s
+      /if (${Bool[${Me.Pet.ID}]}) /break 
+    /next s
     } else {
     |accounce time left on charm
       /for s 1 to ${charmArray2D.Size[1]}

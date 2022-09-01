@@ -24,7 +24,8 @@ Sub check_Cures
       /next n
       |if enough people have the debuff to cure
       /if (${numSick} >= ${rCure2D[${t},${iMinSick}]}) /call cast_RadiantCure
-    /if (!${ActionTaken})  /next t
+      /if (${ActionTaken}) /break  
+    /next t
   }
 
 | 2- checks specified Target curing: Cure#
@@ -49,7 +50,8 @@ Sub check_Cures
           } else /if (${Debug} || ${Debug_Cures}) /echo ${cureTargets2D[${t},${iCastName}]} is not ready for ${NetBots[${curePlayer}].Name}
         }
       }
-    /if (!${ActionTaken})  /next t
+    /if (${ActionTaken}) /break  
+    /next t
   }
 
 | 3a - cure group first in cureall
@@ -73,7 +75,8 @@ Sub check_Cures
         }
       /if (${ActionTaken}) /break
  /next g
-    /if (!${ActionTaken})  /next t
+    /if (${ActionTaken}) /break
+    /next t
   }
 
 | 3b- checks all netbot curing: CureAll#
@@ -98,9 +101,11 @@ Sub check_Cures
               } else /if (${Debug} || ${Debug_Cures}) /echo ${cureAllTargets2D[${t},${iCastName}]} is too far away
             } else /if (${Debug} || ${Debug_Cures}) /echo ${cureAllTargets2D[${t},${iCastName}]} is not ready for ${NetBots.Client[${n}]}
           }
-        /if (!${ActionTaken})  /next t
+        /if (${ActionTaken}) /break
+        /next t
       }
-    /if (!${ActionTaken})  /next n
+    /if (${ActionTaken})  /break
+    /next n
 
   }
 /RETURN

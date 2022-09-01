@@ -273,7 +273,7 @@ SUB buffProcs
     /declare g int local
 
     /for s 1 to ${ProcBuffs2D.Size[1]}
- /if (${ProcBuffs2D.Size[1]}==0) /break
+       /if (${ProcBuffs2D.Size[1]}==0) /break
       /for g 0 to ${Math.Calc[${Group.GroupSize}-1]} | include 0 so you can self proc buff
         /if (${Group.Member[${g}].ID}) {
           /if (${procBuffClass.Find[${Group.Member[${g}].Class.ShortName}]}) {
@@ -300,8 +300,9 @@ SUB buffProcs
       /doevents BackOff
       /doevents Assist
       /if (${ActionTaken}) /break
- /next g
-    /if (!${ActionTaken})  /next s
+      /next g
+      /if (${ActionTaken}) /break  
+    /next s
   }
 /if (${Debug} || ${Debug_BuffCheck}) /echo <==  buffProcs -|
 /return
@@ -313,7 +314,7 @@ SUB checkAuras
   /if ((${Bool[${Me.AltAbility[Spirit Mastery]}]} || ${Bool[${Me.AltAbility[Auroria Mastery]}]}) && !${Bool[${Me.Aura[2]}]}) {
     /declare s int local
     /for s 1 to ${auraSpells2D.Size[1]}
- /if (${auraSpells2D.Size[1]}==0) /break
+      /if (${auraSpells2D.Size[1]}==0) /break
       /if (!${Bool[${Me.Aura[${auraSpells2D[${s},${iSpellName}]}]}]}) {
         /declare previousSpell string local ${Me.Gem[${DefaultGem}]}
         /call check_Ready "auraSpells2D" ${s}
@@ -327,7 +328,8 @@ SUB checkAuras
           }
         }
       }
-    /if (!${ActionTaken})  /next s
+    /if (${ActionTaken})  /break
+  /next s
   } else /if (!${Bool[${Me.Aura[1]}]}) {
     /if (${Me.Class.ShortName.Equal[BRD]}) {
      

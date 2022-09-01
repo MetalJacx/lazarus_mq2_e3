@@ -633,7 +633,8 @@ Sub check_bard_charm
           }
         }
       }
-      /if (!${Bool[${Me.Pet.ID}]}) /next s
+      /if (${Bool[${Me.Pet.ID}]}) /break
+    /next s
     } else {
       |accounce time left on charm
       /for s 1 to ${charmArray2D.Size[1]}
@@ -679,7 +680,8 @@ sub check_bard_mez
     /for i 1 to ${SpawnCount[playerstate 4 npc targetable radius ${AE_Radius}]}
  /if (${SpawnCount[playerstate 4 npc targetable radius ${AE_Radius}]}==0) /break
       /varset mezTarg ${NearestSpawn[${i},playerstate 4 npc targetable radius ${AE_Radius}].ID}
-      /if (${Spawn[id ${mezTarget}].CleanName.Find[' pet]}) /next i
+      /if (!${Spawn[id ${mezTarget}].CleanName.Find[' pet]}) /break
+    /next i
       /call TrueTarget ${mezTarg}
       /delay 1s ${Target.BuffsPopulated}
       /if (${Select[${AssistTarget},${mezTarg}]}==0 && (!${Bool[${Target.Mezzed}]} || ${Target.Mezzed.Duration.TotalSeconds} < 7)) {
@@ -987,7 +989,8 @@ SUB dynamoTwist
           /return
         }
       }      
-    /if (${i} < ${melodyArray.Size}) /next i
+    /if (${i} >= ${melodyArray.Size}) /break
+  /next i
   }
 /return
 

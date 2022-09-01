@@ -142,7 +142,8 @@ SUB loot_Area
     /varcalc CorpsesLeft ${CorpsesLeft}-1
     |exits loop if autoloot was turned off
     /doevents lootRelay
-  /if (${Auto_Loot}) /next i
+    /if (!${Auto_Loot}) /break
+  /next i
   |if all corpses in radius cant be looted, dont try again until a new kill occurs
   /if (${cantLootCorpseCount}>=${SpawnCount[npc corpse zradius 50 radius ${seek_Radius} "_"]}) /doevents flush YourKill
 

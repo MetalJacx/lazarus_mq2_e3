@@ -112,9 +112,9 @@ SUB heal_tanks
 	/declare buffCheckForID int local -1
 
 	/for t 1 to ${tanks.Size}
- /if (${tanks.Size}==0) /break
+ 		/if (${tanks.Size}==0) /break
 		/for t 1 to ${tanks.Size}
- /if (${tanks.Size}==0) /break
+ 			/if (${tanks.Size}==0) /break
 		/varset GroupMemberIndex -1
 			
 			/varset buffCheckForID ${tankHeals2D[${s},${iCheckForID}]}
@@ -160,8 +160,10 @@ SUB heal_tanks
 				}
 			}
 			:skipHeal
-		/if (!${Bool[${currentBot}]}) /next s
-	/if (!${Bool[${currentBot}]}) /next t
+		/if (${Bool[${currentBot}]}) /break
+		/next s
+		/if (${Bool[${currentBot}]}) /break
+	/next t
 
 	/if (${Bool[${currentBot}]}) {
 		/if (${UseNecroHealOrbs} && ${Target.PctHPs} < 60) {
@@ -501,8 +503,10 @@ SUB hot_tanks
 					}
 				}
 			}
-		/if (!${Bool[${currentBot}]}) /next s
-	/if (!${Bool[${currentBot}]}) /next t
+		/if (${Bool[${currentBot}]}) /break
+		/next s
+		/if (${Bool[${currentBot}]}) /break
+	/next t
 	
 	/if (${Bool[${currentBot}]}) {
 
@@ -803,8 +807,10 @@ SUB check_HealCasting_DuringDetrimental
 					}
 				}
 				:skipHeal
-			/if (!${Bool[${currentBot}]}) /next s
-		/if (!${Bool[${currentBot}]}) /next t
+		/if (${Bool[${currentBot}]}) /break
+		/next s
+		/if (${Bool[${currentBot}]}) /break
+	/next t
 
 		/if (${Bool[${currentBot}]}) {
 			/echo [${Time}]: check_HealCasting_DuringDetrimental tank setting interrupt flag
@@ -916,8 +922,10 @@ SUB check_HealCasting_DuringBurns
 						/varset currentSpellIndx ${s}
 					}
 				}
-			/if (!${Bool[${currentBot}]}) /next s
-		/if (!${Bool[${currentBot}]}) /next t
+		/if (${Bool[${currentBot}]}) /break
+		/next s
+		/if (${Bool[${currentBot}]}) /break
+	/next t
 
 		/if (${Bool[${currentBot}]}) {
 		
@@ -1106,8 +1114,10 @@ SUB check_TankNeedHeal
 						/varset currentSpellIndx ${s}
 					}
 				}
-			/if (!${Bool[${currentBot}]}) /next s
-		/if (!${Bool[${currentBot}]}) /next t
+		/if (${Bool[${currentBot}]}) /break
+		/next s
+		/if (${Bool[${currentBot}]}) /break
+	/next t
 
 		/if (${Bool[${currentBot}]}) {
 			/echo [${Time}]: check_TankNeedHeal tank needs heal setting interrupt flag

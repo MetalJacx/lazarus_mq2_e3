@@ -38,8 +38,7 @@ SUB event_Assist(line, ChatSender, int MobID)
       }
       | Disengage follow.
       /if (${Stick.Active}) /squelch /stick off
-      /if (${NetAdvPath.Following}) /squelch /netfollow off
-      | Set Assist Variables.
+/if (${AdvPath.Following}) /squelch /afollow off      | Set Assist Variables.
       /varset Assisting TRUE
       /varset AssistTarget ${MobID}
       /varset AllowControl FALSE
@@ -1056,7 +1055,8 @@ SUB Debuffs_OnCommand
           /call cast_longTermSpells "${targetID}" "Command_Debuffs2D"
         }
       }
-      /if (!${ActionTaken} && ${Defined[Debuff_Targets]}) /next i
+      /if (${ActionTaken}) /break
+    /next i
   }
 /if (${Debug} || ${Debug_Assists}) /echo <== Debuffs_OnCommand -|
 /RETURN
@@ -1071,7 +1071,7 @@ SUB Debuffs_OnAll
 	/declare i int local
 	/if (${Defined[Debuff_AllTargets]}) {
     /for i 1 to ${Debuff_AllTargets.Size}
- /if (${Debuff_AllTargets.Size}==0) /break
+      /if (${Debuff_AllTargets.Size}==0) /break
       /varset targetID ${Debuff_AllTargets[${i}].Arg[1,_]}
       /varset targetZone ${Debuff_AllTargets[${i}].Arg[2,_]}
       | Check Mob Zone
@@ -1085,7 +1085,8 @@ SUB Debuffs_OnAll
           /call cast_longTermSpells "${targetID}" "All_Debuffs2D"
         }
       }
-      /if (!${ActionTaken} && ${Defined[Debuff_AllTargets]}) /next i
+      /if (${ActionTaken}) /break 
+    /next i
   }
 /if (${Debug} || ${Debug_Assists}) /echo <== Debuffs_OnAll -|
 /RETURN
@@ -1179,7 +1180,8 @@ SUB DoTs_OnCommand
           /call cast_damageOverTimeSpells ${targetID} "Command_DoTs2D"
         }
       }
-    /if (!${ActionTaken} && ${Defined[DoT_Targets]}) /next i
+      /if (${ActionTaken}) /break 
+    /next i
   }
 /if (${Debug} || ${Debug_Assists}) /echo <== DoT_OnCommand -|
 /RETURN

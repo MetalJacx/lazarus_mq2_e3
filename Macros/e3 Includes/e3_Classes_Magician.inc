@@ -586,9 +586,11 @@ SUB check_CoH
 				/echo AutoCoh complete on ${cohTargets[${t}]}
 				/call RemoveArrayElement cohTargets "${cohTargets[${t}]}"				
 			}
-        /if (!${ActionTaken})  /next s
+        /if (${ActionTaken})  /break
+        /next s
       } else /if (${Debug} || ${Debug_MAG}) /docommand ${ChatToggle} << AutoCoH ${cohTargets[${t}]} is not in my group >>
-    /if (!${ActionTaken})  /next t
+    /if (${ActionTaken})  /break
+    /next t
   }
   /if (${Debug} || ${Debug_MAG}) /echo <== MAG_checkCoH -|
 /RETURN

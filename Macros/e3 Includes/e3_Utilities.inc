@@ -29,11 +29,11 @@ Sub IniToArrayV(IniKey, ArrayName)
  /if (${IniKey.Right[1].Equal[#]}) /varset IniKey ${IniKey.Left[-1]}
   
   /if (${Defined[${ArrayName}]}) /deletevar ${ArrayName}
-  /varset totalKeys ${Ini[${IniKey}?-1]}
+  /varset totalKeys ${IniExtKey[${IniKey}]}
   /if (${totalKeys}>0) {
     /for i 0 to ${Math.Calc[${totalKeys}-1]}
  /if (${Math.Calc[${totalKeys}-1]}==0) /break
-    /if (${Ini[${IniKey}?${i}].Length}) {
+    /if (${IniExtKey[${IniKey},${i}].Length}) {
       /varcalc array_size ${array_size}+1
     }
     /next i
@@ -42,10 +42,10 @@ Sub IniToArrayV(IniKey, ArrayName)
     /declare ${ArrayName}[${array_size}] string outer
     /if (${totalKeys}>0) {
       /for i 0 to ${Math.Calc[${totalKeys}-1]}
- /if (${Math.Calc[${totalKeys}-1]}==0) /break
+ 		/if (${Math.Calc[${totalKeys}-1]}==0) /break
       |/echo ${ArrayName}[${i}] ${IniExt[${IniKey}].Index[${i}]} Length: ${IniExt[${IniKey}].Index[${i}].Length}
-      /if (${Ini[${IniKey}?${i}].Length}) {
-        /varset ${ArrayName}[${j}] ${Ini[${IniKey}?${i}]}
+      /if (${IniExtKey[${IniKey},${i}].Length}) {
+        /varset ${ArrayName}[${j}] ${IniExtKey[${IniKey},${i}]}
         /varcalc j ${j}+1
       }
       /next i
