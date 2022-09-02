@@ -135,7 +135,7 @@ SUB e3_Setup(modeSelect)
   | Setup Includes ==========================================================================================================
   /declare i int local
 	/for i 1 to ${macroSetups.Size}
- /if (${macroSetups.Size}==0) /break
+ 		/if (${macroSetups.Size}==0) /break
      |/g ${macroSetups[${i}]} ${Time} Start
 		/if (${macroSetups[${i}].Equal[class]}) /varset macroSetups[${i}] ${Me.Class.ShortName}
 		/if (${Bool[${macroSetups[${i}]}]}) /call ${macroSetups[${i}]}_Setup

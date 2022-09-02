@@ -62,7 +62,7 @@ SUB check_lifeSupport
 		| only use life support when near mobs and it is agressive to us or we are in combat and there are npcs in 200 radius
 		/if  (${Bool[${Spawn[npc radius 50].Aggressive}]}|| (${SpawnCount[npc radius 200]} > 0 && ${Me.CombatState.Equal[COMBAT]})) {
 			/for s 1 to ${lifeSupport2D.Size[1]}
- /if (${lifeSupport2D.Size[1]}==0) /break
+ 				/if (${lifeSupport2D.Size[1]}==0) /break
 				/varset castName ${lifeSupport2D[${s},${iCastName}]}
 				/if (${Me.PctHPs} <= ${lifeSupport2D[${s},${iHealPct}]}) {
 					/call check_Ready "lifeSupport2D" "${s}"
@@ -112,10 +112,11 @@ SUB heal_tanks
 	/declare buffCheckForID int local -1
 
 	/for t 1 to ${tanks.Size}
+		
  		/if (${tanks.Size}==0) /break
 		/for s 1 to ${tankHeals2D.Size[1]}
- 			/if (${tankHeals2D.Size[1]}==0) /break
-		/varset GroupMemberIndex -1
+			/if (${tankHeals2D.Size[1]}==0) /break
+			/varset GroupMemberIndex -1
 			
 			/varset buffCheckForID ${tankHeals2D[${s},${iCheckForID}]}
 			/if (${buffCheckForID}>0) {

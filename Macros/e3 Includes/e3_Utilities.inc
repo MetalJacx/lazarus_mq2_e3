@@ -14,47 +14,48 @@ Sub IniToVarV(Ini_Key, VarToMake, VarType)
 
 |-----------------------
 Sub IniToArrayV(IniKey, ArrayName)
+
   /declare i int local 1
   /declare j int local 1
   /declare array_size int local 0
   /declare ArrayScope string local outer
   /declare totalKeys int local 0
-  |/if (${IniKey.Right[1].Equal[#]} && ${IniExt[${IniKey}1].Length}) {
-  |  /call IniToArray_Deprecated "${IniKey}" "${ArrayName}"
-  |  /return
-  |}
-  
+
   |example key: "${Character_Ini},DoTs on Assist,Main#"
   |strip off the # from the call
  /if (${IniKey.Right[1].Equal[#]}) /varset IniKey ${IniKey.Left[-1]}
   
   /if (${Defined[${ArrayName}]}) /deletevar ${ArrayName}
   /varset totalKeys ${IniExtKey[${IniKey}]}
+  /if (${Debug}) /echo IniToArrayV total keys: ${totalKeys}
+      
   /if (${totalKeys}>0) {
-    /for i 0 to ${Math.Calc[${totalKeys}-1]}
- /if (${Math.Calc[${totalKeys}-1]}==0) /break
-    /if (${IniExtKey[${IniKey},${i}].Length}) {
-      /varcalc array_size ${array_size}+1
-    }
+    /for i 1 to ${totalKeys}
+ 		/if (${totalKeys}==0) /break
+     	
+    	/if (${IniExtKey[${IniKey},${Math.Calc[${i}-1]}].Length}) {
+			/if (${Debug}) /echo IniToArrayV Creating non-empty array: ${ArrayName} with size: ${array_size}
+      		/varcalc array_size ${array_size}+1
+    	}
     /next i
-    |/declare ${ArrayName}[${IniExt[${IniKey}].Count}] string ${ArrayScope}
-	|/echo Creating non-empty array: ${ArrayName} with size: ${array_size}
+	|/if (${Debug}) /echo IniToArrayV Creating non-empty array: ${ArrayName} with size: ${array_size}
     /declare ${ArrayName}[${array_size}] string outer
     /if (${totalKeys}>0) {
-      /for i 0 to ${Math.Calc[${totalKeys}-1]}
- 		/if (${Math.Calc[${totalKeys}-1]}==0) /break
-      |/echo ${ArrayName}[${i}] ${IniExt[${IniKey}].Index[${i}]} Length: ${IniExt[${IniKey}].Index[${i}].Length}
-      /if (${IniExtKey[${IniKey},${i}].Length}) {
-        /varset ${ArrayName}[${j}] ${IniExtKey[${IniKey},${i}]}
+      /for i 1 to ${totalKeys}
+ 		/if (${totalKeys}==0) /break
+      	|/if (${Debug}) /echo ${ArrayName}[${i}] ${IniExt[${IniKey}].Index[${i}]} Length: ${IniExt[${IniKey}].Index[${i}].Length}
+      	/if (${IniExtKey[${IniKey},${Math.Calc[${i}-1]}].Length}) {
+        /varset ${ArrayName}[${j}] ${IniExtKey[${IniKey},${Math.Calc[${i}-1]}]}
         /varcalc j ${j}+1
       }
       /next i
     }
   } else {
-	|/echo Creating empty array: ${ArrayName}
+	|/if (${Debug}) /echo IniToArrayV Creating empty array: ${ArrayName}
 	/if (${Defined[${ArrayName}]}) /deletevar ${ArrayName}
 	/declare ${ArrayName}[0] string outer
   }
+  
 /return
 
 |-----------------------
@@ -324,6 +325,7 @@ Sub BuildSpellArray(ArrayNameFromBuildSpellArray, NewArrayNameFromBuildSpellArra
 /return
 SUB BuildSingleSpellArrayBase(spellName, NewArrayName, SkipParams)
 
+	
 	/if (!${Defined[${NewArrayName}]}) {
 	
 		/declare ${NewArrayName}[1,${SpellProp.Size}] string outer 0

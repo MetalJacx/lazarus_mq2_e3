@@ -166,6 +166,11 @@ Sub cures_Setup
 |--------------------------------------------|
 |remove cures from arrays if /Zone is not equal to the current zone shortname or All
 Sub cure_spellArrays
+
+  /if (!${Bool[${Ini[${Character_Ini},Cures]}]}) {
+    /return
+  }
+
   /declare i int local
   /declare removeIndexZone string local
   /call IniToArrayV "${Character_Ini},Cures,RadiantCure#"	rCureArray
