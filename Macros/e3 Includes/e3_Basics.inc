@@ -2005,7 +2005,7 @@ sub event_gimme(line, ChatSender, RequestedItem)
 	/declare IsMyBot bool local ${Bool[${Select[${ChatSender}, ${NetBots.Client}]}]}
 
   /if (!${Defined[GimmeSharing]}) {
-    /if (${Ini[${Character_Ini},Misc,GimmeSharing?-1]} > 0) {
+    /if (${IniExtKey[${Character_Ini},Misc,GimmeSharing]} > 0) {
       /call iniToVarV "${Character_Ini},Misc,GimmeSharing" GimmeSharing bool outer
     } else {
       /declare GimmeSharing bool outer TRUE

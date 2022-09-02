@@ -17,7 +17,7 @@ Sub check_Cures
  /if (${rCure2D.Size[1]}==0) /break
       /varset numSick 0
       /for n 0 to ${Group}
- /if (${Group}==0) /break
+        /if (${Group}==0) /break
         /if (${SpawnCount[pc =${Group.Member[${n}]}]} && ${NetBots[${Group.Member[${n}]}].Counters}>0) {
           /if (${Bool[${Group.Member[${n}].Distance}]} && ${Group.Member[${n}].Distance} < ${rCure2D[${t},${iMyRange}]} && ${Bool[${NetBots[${Group.Member[${n}]}].Buff.Find[${rCure2D[${t},${iCheckForID}]} ]}]}) /varcalc numSick ${numSick}+1
         }
@@ -59,8 +59,8 @@ Sub check_Cures
     /if (${Debug} || ${Debug_Cures}) /echo Checking All
     /for t 1 to ${cureAllTargets2D.Size[1]}
  /if (${cureAllTargets2D.Size[1]}==0) /break
-      /for t 1 to ${cureAllTargets2D.Size[1]}
- /if (${cureAllTargets2D.Size[1]}==0) /break
+     /for g 1 to ${Group}
+        /if (${Group}==0) /break
         /if (${SpawnCount[pc =${Group.Member[${n}]}]} && ${NetBots[${Group.Member[${n}]}].Counters}>0) {
           /if (${NetBots[${Group.Member[${g}]}].Buff.Find[${Spell[${cureAllTargets2D[${t},${iCheckFor}]}].ID} ]}) {
             /call check_Ready "cureAllTargets2D" ${t}
@@ -74,22 +74,19 @@ Sub check_Cures
           }
         }
       /if (${ActionTaken}) /break
- /next g
+      /next g
     /if (${ActionTaken}) /break
     /next t
   }
 
 | 3b- checks all netbot curing: CureAll#
   /if (!${ActionTaken} && ${doCureAll}) {
-    /if (${Math.Rand[2]}==0) {
+    
       /for n 1 to ${NetBots.Counts}
- /if (${NetBots.Counts}==0) /break
-    } else {
-      /for n ${NetBots.Counts} downto 1
-    }
-      /if (${SpawnCount[pc =${NetBots.Client[${n}]}]} && ${NetBots[${NetBots.Client[${n}]}].Counters}>0) {
+          /if (${NetBots.Counts}==0) /break
+        /if (${SpawnCount[pc =${NetBots.Client[${n}]}]} && ${NetBots[${NetBots.Client[${n}]}].Counters}>0) {
         /for t 1 to ${cureAllTargets2D.Size[1]}
- /if (${cureAllTargets2D.Size[1]}==0) /break
+          /if (${cureAllTargets2D.Size[1]}==0) /break
           /if (${Debug} || ${Debug_Cures}) /echo ${NetBots.Client[${n}]} sp ${SpawnCount[pc =${NetBots.Client[${n}]}]} bf ${NetBots[${NetBots.Client[${n}]}].Buff.Find[${Spell[${cureAllTargets2D[${t},${iCheckFor}]}].ID} ]} sp ${Spell[${cureAllTargets2D[${t},${iCheckFor}]}].ID}
           /if (${NetBots[${NetBots.Client[${n}]}].Buff.Find[${Spell[${cureAllTargets2D[${t},${iCheckFor}]}].ID} ]}) {
             /call check_Ready "cureAllTargets2D" ${t}
@@ -101,10 +98,10 @@ Sub check_Cures
               } else /if (${Debug} || ${Debug_Cures}) /echo ${cureAllTargets2D[${t},${iCastName}]} is too far away
             } else /if (${Debug} || ${Debug_Cures}) /echo ${cureAllTargets2D[${t},${iCastName}]} is not ready for ${NetBots.Client[${n}]}
           }
-        /if (${ActionTaken}) /break
+          /if (${ActionTaken}) /break
         /next t
       }
-    /if (${ActionTaken})  /break
+    /if (${ActionTaken}) /break
     /next n
 
   }
