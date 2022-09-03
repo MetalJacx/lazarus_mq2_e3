@@ -129,7 +129,7 @@ SUB AssistOff
 
   /delay 5 !${Me.Combat} && !${Me.AutoFire}
 
-	/varset Assisting FALSE
+ 	/varset Assisting FALSE
 	/varset AssistTarget 0
 	/varset AllowControl FALSE
   /varset isEnraged FALSE
@@ -1997,7 +1997,7 @@ Sub assist_Setup
   /declare DoT_Target_Map map outer
   /declare DoT_Target_Map_Removal map outer
   /declare Debuff_Target_Map map outer
-  /declare Debuff_Target_Removal map outer
+  /declare Debuff_Target_Map_Removal map outer
 
 	/declare TogglePvP bool outer FALSE
 	/declare Assisting bool outer FALSE
