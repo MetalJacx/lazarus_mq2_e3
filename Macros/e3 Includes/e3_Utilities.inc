@@ -161,6 +161,19 @@ SUB WriteToIni(Ini_Key, WhatToWrite, bool OverWrite)
 SUB BuildArray(ArrayName, Data)
 /if (${Debug}) /echo |- BuildArray Adding [${ArrayName}-${Data}] ==>
 	| If the array is not defined, declare it.
+
+	/if (${Defined[${ArrayName}]}) {
+		/if (${${ArrayName}.Size}<1) {
+			/echo <BuildArray> EMPTY ARRAY, DELETING/RECREATING
+			/deletevar ${ArrayName}
+			/declare ${ArrayName}[1] string outer
+			/varset ${ArrayName}[1] ${Data}
+			/if (${Debug}) /echo <== BuildArray -|
+			/return
+		}
+		
+	}
+
 	/if (!${Defined[${ArrayName}]}) {
 		/declare ${ArrayName}[1] string outer
 		/varset ${ArrayName}[1] ${Data}
@@ -170,7 +183,7 @@ SUB BuildArray(ArrayName, Data)
 		/declare ${ArrayName}Copy[${${ArrayName}.Size}] string local
 		/declare i int local
 		/for i 1 to ${${ArrayName}.Size}
- /if (${${ArrayName}.Size}==0) /break
+ 			/if (${${ArrayName}.Size}==0) /break
 			/varset ${ArrayName}Copy[${i}] ${${ArrayName}[${i}]}
 		/next i
 		| Delete the existing array.
@@ -178,7 +191,7 @@ SUB BuildArray(ArrayName, Data)
 		| Build a resized array.
 		/declare ${ArrayName}[${Math.Calc[${${ArrayName}Copy.Size}+1].Int}] string outer
 		/for i 1 to ${${ArrayName}.Size}
- /if (${${ArrayName}.Size}==0) /break
+ 			/if (${${ArrayName}.Size}==0) /break
 			/varset ${ArrayName}[${i}] ${${ArrayName}Copy[${i}]}
 		/next i
 		| Insert new data into the array
@@ -1128,7 +1141,7 @@ SUB RemoveArrayElement(ArrayName, Data)
 	/declare i int local
 	| Count array elements that do not match 'Data'.
 	/for i 1 to ${${ArrayName}.Size}
- /if (${${ArrayName}.Size}==0) /break
+ 		/if (${${ArrayName}.Size}==0) /break
 		/if (${${ArrayName}[${i}].NotEqual[${Data}]}) {
 			/varset remainingElements ${remainingElements}${${ArrayName}[${i}]},
 			/varcalc newArraySize ${newArraySize} + 1
@@ -1138,7 +1151,7 @@ SUB RemoveArrayElement(ArrayName, Data)
 	/if (${newArraySize}) {
 		/declare newArray[${newArraySize}] string local
 		/for i 1 to ${newArraySize}
- /if (${newArraySize}==0) /break
+ 			/if (${newArraySize}==0) /break
 			/varset newArray[${i}] ${remainingElements.Arg[${i},,]}
 		/next i
 	}
@@ -1148,7 +1161,7 @@ SUB RemoveArrayElement(ArrayName, Data)
 	/if (${Defined[newArray]}) {
 		/declare ${ArrayName}[${newArray.Size}] string outer
 		/for i 1 to ${newArray.Size}
- /if (${newArray.Size}==0) /break
+ 			/if (${newArray.Size}==0) /break
 			/varset ${ArrayName}[${i}] ${newArray[${i}]}
 		/next i
 	}

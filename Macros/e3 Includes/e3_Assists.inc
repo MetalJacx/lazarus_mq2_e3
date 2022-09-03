@@ -939,31 +939,31 @@ SUB Event_DebuffsOn(line, ChatSender, MobID)
 /if (${Debug} || ${Debug_Assists}) /echo |- event_DebuffsOn ==>
   /if (!${checkEventArgs[${ChatSender},${line},UZR,${MobID}]}) /return
     /varset MobID ${c_eventArgData}
+     /declare lookupKey string local ${MobID}_${Zone.ID}
+
 		/if (${Defined[Command_Debuffs2D]}) {
 			| Check if the target is a corpse
 			/if (${Spawn[id ${MobID}].Type.Equal[Corpse]} || !${Select[${Spawn[id ${MobID}].Type},${AcceptableTargetTypes}]}) {
         /docommand ${ChatToggle} Unacceptable Target ${Spawn[id ${MobID}].Type}
 			} else {
-				| Check range to the debuff target.
-				/if (${Spawn[id ${MobID}].Distance} > ${MaxAssistDistance}) {
-					/docommand ${ChatToggle} ${Spawn[${MobID}].CleanName} is too far away.
-				} else {
-					| Check if the Debuff_Targets array is already defined
-					/if (${Defined[Debuff_Targets]}) {
-						/declare i int local
-						/for i 1 to ${Debuff_Targets.Size}
- /if (${Debuff_Targets.Size}==0) /break
-							/if (${Debuff_Targets[${i}].Arg[1,_]} == ${MobID}) {
-								/docommand ${ChatToggle} I am already debuffing ${Spawn[id ${MobID}].CleanName}.
-								/goto :Skip
-							}
-						/next i
-					}
-					/call BuildArray Debuff_Targets ${MobID}_${Zone.ID}
-          |/docommand ${ChatToggle} -- Debuffing ${Spawn[${MobID}].CleanName} --
-          /bc [+g+] -- Debuffing [${Spawn[${MobID}].CleanName}] --
-				}
-			}
+				
+              | Check range to the DoTs target.
+        /if (${Spawn[id ${MobID}].Distance} > ${MaxAssistDistance}) {
+			    /echo ${Spawn[${MobID}].CleanName} is too far away
+          /docommand ${ChatToggle} ${Spawn[${MobID}].CleanName} is too far away.
+        } else {
+           
+           /if (${Debuff_Target_Map.Contains[${lookupKey}]}) {
+              /docommand ${ChatToggle} I am already debuffing ${Spawn[id ${MobID}].CleanName}.
+           } else {
+
+              /if (${Debuff_Target_Map.Add[${lookupKey},${lookupKey}]}) {
+                /bc [+g+] -- Debuffing [${Spawn[${MobID}].CleanName}] --
+              }
+           }
+           
+        }
+ 			}
 		}
 	:Skip
 /if (${Debug} || ${Debug_Assists}) /echo <== event_DebuffsOn -|
@@ -993,7 +993,7 @@ SUB Event_DebuffsAllOn(line, ChatSender, MobID)
 					/if (${Defined[Debuff_AllTargets]}) {
 						/declare i int local
 						/for i 1 to ${Debuff_AllTargets.Size}
- /if (${Debuff_AllTargets.Size}==0) /break
+              /if (${Debuff_AllTargets.Size}==0) /break
 							/if (${Debuff_AllTargets[${i}].Arg[1,_]} == ${MobID}) {
 								/docommand ${ChatToggle} I am already debuffing ${Spawn[id ${MobID}].CleanName}.
 								/goto :Skip
@@ -1017,15 +1017,15 @@ SUB Event_DebuffsAllOn(line, ChatSender, MobID)
 #EVENT DebuffsOff "<#1#> End debuffs on #2#"
 SUB event_DebuffsOff(line, ChatSender, MobID)
 /if (${Debug} || ${Debug_Assists}) /echo |- event_DebuffsOff ==>
-	/if (${Defined[Debuff_Targets]}) {
+	/if (${Debuff_Target_Map.Count}>0) {
 	  /if (!${Defined[MobID]}) /declare MobID int
     /if (!${checkEventArgs[${ChatSender},${line},UZR,${MobID}]}) /return
     /if (${Bool[${c_eventArgData}]}) {
       /docommand ${ChatToggle} Ending Debuffs on ${Spawn[id ${c_eventArgData}].CleanName}.
-      /call RemoveArrayElement Debuff_Targets ${c_eventArgData}_${Zone.ID}
+      /if (${Debuff_Target_Map.Remove[${c_eventArgData}_${Zone.ID}]}) {}
     } else {
       /docommand ${ChatToggle} Ending Debuffs on all targets.
-      /deletevar Debuff_Targets
+      /if (${Debuff_Target_Map.Clear}) {}
     }
   }
 /if (${Debug} || ${Debug_Assists}) /echo <== event_DebuffsOff -|
@@ -1036,28 +1036,54 @@ SUB event_DebuffsOff(line, ChatSender, MobID)
 |--------------------------------------------------------------------|
 SUB Debuffs_OnCommand
 /if (${Debug} || ${Debug_Assists}) /echo |- Debuffs_OnCommand ==>
+	
+  /if (${Debuff_Target_Map.Count}<1) {
+    /if (${Debug} || ${Debug_Assists}) /echo <== DoT_OnCommand -|
+    /return
+  }
 	/declare targetID int local
 	/declare targetZone int local
+  /declare keyValue string local
 	/declare i int local
-	/if (${Defined[Debuff_Targets]}) {
-    /for i 1 to ${Debuff_Targets.Size}
- /if (${Debuff_Targets.Size}==0) /break
-      /varset targetID ${Debuff_Targets[${i}].Arg[1,_]}
-      /varset targetZone ${Debuff_Targets[${i}].Arg[2,_]}
-      | Check Mob Zone
-      /if (${Zone.ID} != ${targetZone}) {
-        /call RemoveArrayElement Debuff_Targets ${Debuff_Targets[${i}]}
-      } else {
-        | If the Debuff_Target has died, remove them from the array.
-        /if (!${Bool[${Spawn[id ${targetID}].Type.NotEqual[Corpse]}]}) {
-          /call RemoveArrayElement Debuff_Targets ${Debuff_Targets[${i}]}
+  /declare mi mapiterator local
+  /vardata mi Debuff_Target_Map.First
+    
+    /while (!${mi.IsEnd}) {
+        /varset keyValue ${mi.Key}
+        /varset targetID ${keyValue.Arg[1,_]}
+        /varset targetZone ${keyValue.Arg[2,_]}
+
+        /if (${Zone.ID} != ${targetZone}) {
+            /if (${Debuff_Target_Map_Removal.Add[${keyValue},${keyValue}]}) {}
         } else {
-          /call cast_longTermSpells "${targetID}" "Command_Debuffs2D"
+       
+          | If the DoT_Target has died, remove them from the array.
+          /if (!${Bool[${Spawn[id ${targetID}].Type.NotEqual[Corpse]}]}) {
+            
+            /if (${Debuff_Target_Map_Removal.Add[${keyValue},${keyValue}]}) {}
+          
+          } else {
+            |/call cast_longTermSpells "${targetID}" "Command_DoTs2D"
+            |Ewiclip MOD: New method for DoTs
+            /call cast_longTermSpells ${targetID} "Command_Debuffs2D"
+          }
         }
+        /if (${ActionTaken}) /break
+        /if (${mi.Advance}) {}
+
+    }
+    |remove the values from Debuff_Target_Map that we couldn't while iterating
+    /if (${Debuff_Target_Map_Removal.Count}>0) {
+      /declare miRemove mapiterator local
+      /vardata miRemove Debuff_Target_Map_Removal.First
+      /while (!${miRemove.IsEnd}) {
+        /if (${Debuff_Target_Map.Remove[${miRemove.Key}]} ) {}
+        /if (${miRemove.Advance}) {}
       }
-      /if (${ActionTaken}) /break
-    /next i
-  }
+      |Clear the removal map as we are now done processing
+      /if (${Debuff_Target_Map_Removal.Clear} ) {}
+    }
+  
 /if (${Debug} || ${Debug_Assists}) /echo <== Debuffs_OnCommand -|
 /RETURN
 
@@ -1102,30 +1128,31 @@ SUB Event_DoTsOn(line, ChatSender, MobID)
 /if (${Debug} || ${Debug_Assists}) /echo |- event_DoTsOn ==>
   /if (${Defined[Command_DoTs2D]}) {
     /if (!${checkEventArgs[${ChatSender},${line},UZR,${MobID}]}) {
-		/echo event args failed
+	
 		/return
 	}
+      
       /varset MobID ${c_eventArgData}
+      /declare lookupKey string local ${MobID}_${Zone.ID}
       /if (${Spawn[id ${MobID}].Type.Equal[Corpse]} || !${Select[${Spawn[id ${MobID}].Type},${AcceptableTargetTypes}]}) {
         /echo Unacceptable Target ${Spawn[id ${MobID}].Type}
       } else {
         | Check range to the DoTs target.
         /if (${Spawn[id ${MobID}].Distance} > ${MaxAssistDistance}) {
-			/echo ${Spawn[${MobID}].CleanName} is too far away
+			    /echo ${Spawn[${MobID}].CleanName} is too far away
           /docommand ${ChatToggle} ${Spawn[${MobID}].CleanName} is too far away.
         } else {
           | Check if the DoT_Targets array is already defined
-          /if (${Defined[DoT_Targets]}) {
-            /declare i int local
-            /for i 1 to ${DoT_Targets.Size}
- /if (${DoT_Targets.Size}==0) /break
-              /if (${DoT_Targets[${i}].Arg[1,_]} == ${MobID}) {
-                /docommand ${ChatToggle} I am already dotting ${Spawn[id ${MobID}].CleanName}.
-                /goto :Skip
+          
+           /if (${DoT_Target_Map.Contains[${lookupKey}]}) {
+              /docommand ${ChatToggle} I am already dotting ${Spawn[id ${MobID}].CleanName}.
+           } else {
+
+              /if (${DoT_Target_Map.Add[${lookupKey},${lookupKey}]}) {
+               	/bc [+g+] -- Dotting [${Spawn[${MobID}].CleanName}] --
               }
-            /next i
-          }
-          /call BuildArray DoT_Targets ${MobID}_${Zone.ID}
+           }
+           
         }
       }
 		}
@@ -1140,17 +1167,26 @@ SUB Event_DoTsOn(line, ChatSender, MobID)
 #EVENT DoTsOff "<#1#> End DoTs on #2#"
 SUB event_DoTsOff(line, ChatSender, MobID)
 /if (${Debug} || ${Debug_Assists}) /echo |- event_DoTsOff ==>
-	/if (${Defined[DoT_Targets]}) {
-	/if (!${Defined[MobID]}) /declare MobID int local
+	
+  /if (!${Defined[MobID]}) /declare MobID int local
   /if (!${checkEventArgs[${ChatSender},${line},UZR,${MobID}]}) /return
   /if (${Bool[${c_eventArgData}]}) {
-    /docommand ${ChatToggle} Ending DoTs on ${Spawn[id ${c_eventArgData}].CleanName}.
-    /call RemoveArrayElement DoT_Targets ${c_eventArgData}_${Zone.ID}
+    
+     /if (${DoT_Target_Map.Contains[${c_eventArgData}_${Zone.ID}]}) {
+        /docommand ${ChatToggle} Ending DoTs on ${Spawn[id ${c_eventArgData}].CleanName}.
+         /if (!${DoT_Target_Map.Remove[${c_eventArgData}_${Zone.ID}]}) {
+            /echo <event_DoTsOff> issue removing :${c_eventArgData}_${Zone.ID}
+         }
+    }
+ 
   } else {
-    /docommand ${ChatToggle} Ending DoTs on all targets.
-    /deletevar DoT_Targets
+    
+     /docommand ${ChatToggle} Ending DoTs on all targets.
+      /if (!${DoT_Target_Map.Clear}) { 
+          /echo Issue clearing DoT_Target_Map
+      }
   }
-  }
+  
 /if (${Debug} || ${Debug_Assists}) /echo <== event_DoTsOff -|
 /RETURN
 
@@ -1159,30 +1195,54 @@ SUB event_DoTsOff(line, ChatSender, MobID)
 |----------------------------------------------------------------|
 SUB DoTs_OnCommand
 /if (${Debug} || ${Debug_Assists}) /echo |- DoTs_OnCommand ==>
+
+  /if (${DoT_Target_Map.Count}<1) {
+    /if (${Debug} || ${Debug_Assists}) /echo <== DoT_OnCommand -|
+    /return
+  }
 	/declare targetID int local
 	/declare targetZone int local
+  /declare keyValue string local
 	/declare i int local
-	/if (${Defined[DoT_Targets]}) {
-    /for i 1 to ${DoT_Targets.Size}
- /if (${DoT_Targets.Size}==0) /break
-      /varset targetID ${DoT_Targets[${i}].Arg[1,_]}
-      /varset targetZone ${DoT_Targets[${i}].Arg[2,_]}
-      | Check Mob Zone
-      /if (${Zone.ID} != ${targetZone}) {
-        /call RemoveArrayElement DoT_Targets ${DoT_Targets[${i}]}
-      } else {
-        | If the DoT_Target has died, remove them from the array.
-        /if (!${Bool[${Spawn[id ${targetID}].Type.NotEqual[Corpse]}]}) {
-          /call RemoveArrayElement DoT_Targets ${DoT_Targets[${i}]}
+  /declare mi mapiterator local
+  /vardata mi DoT_Target_Map.First
+    
+    /while (!${mi.IsEnd}) {
+        /varset keyValue ${mi.Key}
+        /varset targetID ${keyValue.Arg[1,_]}
+        /varset targetZone ${keyValue.Arg[2,_]}
+
+        /if (${Zone.ID} != ${targetZone}) {
+            /if (${DoT_Target_Map_Removal.Add[${keyValue},${keyValue}]}) {}
         } else {
-          |/call cast_longTermSpells "${targetID}" "Command_DoTs2D"
-          |Ewiclip MOD: New method for DoTs
-          /call cast_damageOverTimeSpells ${targetID} "Command_DoTs2D"
+       
+          | If the DoT_Target has died, remove them from the array.
+          /if (!${Bool[${Spawn[id ${targetID}].Type.NotEqual[Corpse]}]}) {
+            
+            /if (${DoT_Target_Map_Removal.Add[${keyValue},${keyValue}]}) {}
+          
+          } else {
+            |/call cast_longTermSpells "${targetID}" "Command_DoTs2D"
+            |Ewiclip MOD: New method for DoTs
+            /call cast_damageOverTimeSpells ${targetID} "Command_DoTs2D"
+          }
         }
+        /if (${ActionTaken}) /break
+        /if (${mi.Advance}) {}
+
+    }
+    |remove the values from DoT_Target_Map that we couldn't while iterating
+    /if (${DoT_Target_Map_Removal.Count}>0) {
+      /declare miRemove mapiterator local
+      /vardata miRemove DoT_Target_Map_Removal.First
+      /while (!${miRemove.IsEnd}) {
+        /if (${DoT_Target_Map.Remove[${miRemove.Key}]} ) {}
+        /if (${miRemove.Advance}) {}
       }
-      /if (${ActionTaken}) /break 
-    /next i
-  }
+      |Clear the removal map as we are now done processing
+      /if (${DoT_Target_Map_Removal.Clear} ) {}
+    }
+  
 /if (${Debug} || ${Debug_Assists}) /echo <== DoT_OnCommand -|
 /RETURN
 
@@ -1933,6 +1993,11 @@ sub event_CombatMode(line, ChatSender, combatMode)
 Sub assist_Setup
 /call iniToVarV "${advSettings_Ini},Debug,Debug Assists (On/Off)" Debug_Assists bool outer
 /if (${Debug} || ${Debug_Assists}) /echo |- assist_Setup ==>
+
+  /declare DoT_Target_Map map outer
+  /declare DoT_Target_Map_Removal map outer
+  /declare Debuff_Target_Map map outer
+  /declare Debuff_Target_Removal map outer
 
 	/declare TogglePvP bool outer FALSE
 	/declare Assisting bool outer FALSE
