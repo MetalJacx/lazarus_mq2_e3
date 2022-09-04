@@ -1782,3 +1782,15 @@ sub check_MissingInventory(int threshold)
 
 /if (${Debug}) /echo [${Time}]: check_MissingInventory: FAILED
 /return true
+
+
+|Ewiclip MOD: Function for returning if a spell gem is empty
+SUB GetEmptySpellGem
+  /declare i int local 
+  /for i 1 to ${Math.Calc[8+${Me.AltAbility[Mnemonic Retention].Rank}]}
+ /if (${Math.Calc[8+${Me.AltAbility[Mnemonic Retention].Rank}]}==0) /break
+    /if (!${Bool[${Me.Gem[${i}]}]}) {
+      /RETURN ${i}
+    }
+  /next i
+/RETURN 0

@@ -3,6 +3,10 @@
 |--------------------------------------------------------------------|
 #include e3 Includes\e3_PrivateCode.inc
 #include e3 Includes\e3_Alerts.inc
+#include e3 Includes\e3_Assists_Nukes.inc
+#include e3 Includes\e3_Assists_DoTs.inc
+#include e3 Includes\e3_Assists_Debuffs.inc
+#include e3 Includes\e3_Assists_Events.inc
 #include e3 Includes\e3_Assists.inc
 #include e3 Includes\e3_Background.inc
 #include e3 Includes\e3_Basics.inc
