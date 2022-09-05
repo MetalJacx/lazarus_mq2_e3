@@ -15,7 +15,9 @@ SUB check_Heals
 
 	/varset ActionTaken True
 	/declare AtLeastOneActionTaken bool local False
-	/while (${ActionTaken}) {
+	/declare healLoopCounter int local 0
+
+	/while (${ActionTaken} &&  ${healLoopCounter} < 5) {
 		|don't continue if nowcast has something to do
 		/if (${nowSpellArrayQueueCount}>0) {
 			/varset ActionTaken True
@@ -42,6 +44,7 @@ SUB check_Heals
 		/if (${ActionTaken}) {
 			/varset AtLeastOneActionTaken true
 		}
+		/varcalc healLoopCounter ${healLoopCounter}+1
 	}
 	|set actiontaken back to what it should be, if any action was taken.
 	/varset ActionTaken ${AtLeastOneActionTaken}
