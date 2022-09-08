@@ -289,7 +289,8 @@ SUB buffProcs
               } else /if (${Debug} || ${Debug_BuffCheck}) /echo ${ProcBuffs2D[${s},${iCastName}]} is not ready for ${Group.Member[${g}]}
             }
           } else /if (${procBuffClass.Find[PET]} && ${Bool[${NetBots[${Group.Member[${g}]}].PetID}]} && !${NetBots[${Group.Member[${g}]}].PetBuff.Find[${Spell[${ProcBuffs2D[${s},${iCastName}]}].ID}]} && ${Spawn[id ${NetBots[${Group.Member[${g}]}].PetID}].LineOfSight}) {
-			/call e3_Cast ${NetBots[${Group.Member[${g}]}].PetID} "ProcBuffs2D" ${s}
+			    
+          /call e3_Cast ${NetBots[${Group.Member[${g}]}].PetID} "ProcBuffs2D" ${s}
 		  }
         }
       /doevents Follow

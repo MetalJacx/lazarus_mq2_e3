@@ -54,7 +54,7 @@ SUB check_Canni
 		/if (${Me.CombatState.NotEqual[RESTING]}) {
 			/declare s int local
 			/for s 1 to ${canniSpells2D.Size[1]}
- /if (${canniSpells2D.Size[1]}==0) /break
+        /if (${canniSpells2D.Size[1]}==0) /break
 			  /if (${canniSpells2D[${s},${iCastName}].NotEqual[Spiritual Channeling]} || (${canniSpells2D[${s},${iCastName}].Equal[Spiritual Channeling]} && ${Me.CombatState.Equal[COMBAT]})) {
           /call check_Ready "canniSpells2D" ${s}
           /if (${c_Ready}) {
@@ -68,7 +68,7 @@ SUB check_Canni
           }
         }
 			/if (${ActionTaken}) /break
- /next s
+    /next s
 		}
 	}
 /if (${Debug}) /echo <== autoCanni -|
