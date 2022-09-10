@@ -2037,6 +2037,7 @@ sub event_gimme(line, ChatSender, RequestedItem)
 	/declare DCName DC
 	/declare DiamondCoinsName Diamond Coins
 	/declare DCRequested false
+  
 	/if (${DCName.Equal[${RequestedItem}]} || ${DiamondCoinName.Equal[${RequestedItem}]} || ${DiamondCoinsName.Equal[${RequestedItem}]}) {
 		/varset RequestedItem ${DiamondCoinName}
 	}	
@@ -2072,14 +2073,21 @@ sub event_gimme(line, ChatSender, RequestedItem)
   /declare i int local 0
 
 	/if (${IsMyBot} && ${DiamondCoinName.Equal[${RequestedItem}]}) {
-		/delay 1
+
+    /delay 1
 		/echo Collecting Diamond Coins to give to ${ChatSender}
 		/delay 1
 		/if (${Window[InventoryWindow].DoOpen}) /echo Inventory Window Open
     /echo [${Time}] Delaying up to 5 second(s) in event_gimme
 		/delay 5s ${Window[InventoryWindow].Open}
-		/notify InventoryWindow IW_Subwindows tabselect 5
-     /echo [${Time}] Delaying up to 1 second(s) in event_gimme
+
+    /if (!${Window[InventoryWindow].Child[IW_AltCurrPage].Open}) {
+      /call notifyViaBCTell  ${ChatSender} "Please manually open the Alt Currency Tab and try again. Bug in MQNext will cause a crash"
+      /return
+    }
+    |uncomment out once the bug is fixed. Rekka 2022/9/5
+		|/notify InventoryWindow IW_Subwindows tabselect 5
+    /echo [${Time}] Delaying up to 1 second(s) in event_gimme
 		/delay 1s
 		/notify InventoryWindow AltCurr_PointList listselect 8
     /echo [${Time}] Delaying up to 1 second(s) in event_gimme
@@ -2582,6 +2590,7 @@ SUB event_collect(line, ChatSender, RequestedItem)
   /if (${Me.Name.Equal[${ChatSender}]}) {
     /declare i int local
     /for i 1 to ${Group.Members}
+      /if (${Group.Members}==0) /break
       /t ${Group.Member[${i}]} Gimme ${RequestedItem}
       /echo [${Time}] Delaying up to 15 second(s) in event_collect
       /delay 15s
