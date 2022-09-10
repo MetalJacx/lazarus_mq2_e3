@@ -314,7 +314,7 @@ sub check_BardSongs
 
 
 #event saveMelody "<#1#> Save Melody #2# #3#"
-#event saveMelody "[MQ2] Save Melody #2# #3#"
+#event saveMelody "Save Melody #2# #3#"
 SUB EVENT_saveMelody(line, ChatSender, melodyName, songsToSave)
 /if (${Debug}) /echo |- EVENT_saveMelody ==>
 	| If no ChatSender is defined, make one.

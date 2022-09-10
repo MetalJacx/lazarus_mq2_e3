@@ -123,7 +123,7 @@ sub Event_Rez(line, ChatSender)
   }
 /return
 |----------------------------------------------------------------------------|
-#EVENT AE_Rez "[MQ2] AE Rez"
+#EVENT AE_Rez "AE Rez"
 #EVENT AE_Rez "#1# tells you, 'AERez'"
 SUB EVENT_AE_Rez(line, ChatSender)
 /if (${Debug} || ${Debug_Basics}) /echo |- EVENT_AE_Rez ==>

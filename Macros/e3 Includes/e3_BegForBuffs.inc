@@ -228,7 +228,7 @@ SUB event_portRelay(line, destination)
 /RETURN
 
 |------------------------------------------------------------------------|
-#EVENT makeSpellList "[MQ2] Make Spell List"
+#EVENT makeSpellList "Make Spell List"
 #EVENT makeSpellList "<#*#> Make Spell Lists"
 SUB EVENT_makeSpellList
 /if (${Debug} || ${Debug_BegForBuffs}) /echo |- EVENT_makeSpellList ==>
@@ -261,7 +261,7 @@ SUB EVENT_makeSpellList
 /RETURN
 
 |------------------------------------------------------------------------|
-#EVENT import_SpellAliases "[MQ2] Import Spell Aliases"
+#EVENT import_SpellAliases "mport Spell Aliases"
 #EVENT import_SpellAliases "<#*#> Import Spell Aliases"
 SUB EVENT_import_SpellAliases
 /if (${Debug} || ${Debug_BegForBuffs}) /echo |- EVENT_import_SpellAliases ==>
@@ -287,11 +287,11 @@ SUB EVENT_import_SpellAliases
 /RETURN
 
 |------------------------------------------------------------------------|
-#EVENT createSpellAlias "[#1#] Set Spell Alias #2# #3#"
+#EVENT createSpellAlias "Set Spell Alias #2# #3#"
 #EVENT createSpellAlias "<#1#> Set Spell Alias #2# #3#"
 SUB EVENT_createSpellAlias(line, ChatSender, newAlias, spellName)
 /if (${Debug} || ${Debug_BegForBuffs}) /echo |- EVENT_createSpellAlias ==>
-	/if (${ChatSender.Equal[${Me.CleanName}]} || ${ChatSender.Equal[MQ2]}) {
+	/if (${ChatSender.Equal[${Me.CleanName}]}) {
 		/docommand ${ChatToggle} Adding spell alias [${newAlias}] to cast [${spellName}] for [${Me.Class}s].
 		/call WriteToIni "${SpellAliases_Ini},${Me.Class},${newAlias}" "${spellName}" 1
 	}

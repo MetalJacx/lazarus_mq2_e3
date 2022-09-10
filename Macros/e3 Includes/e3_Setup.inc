@@ -199,7 +199,7 @@ SUB make_macroDataIni
 |--------------------------------------------------------------------------------|
 |- Generates a general Macro Settings file, to be used by multiple includes.	-|
 |--------------------------------------------------------------------------------|
-#EVENT make_MacroSettingsIni "[MQ2] Make Macro ini"
+#EVENT make_MacroSettingsIni "Make Macro ini"
 SUB EVENT_make_MacroSettingsIni
 /if (${Debug}) /echo |- make_MacroSettingsIni ==>
 	/echo Creating macro settings files...
@@ -277,7 +277,7 @@ SUB EVENT_make_MacroSettingsIni
 |--------------------------------------------------------------------------------|
 |- Generates a general Macro Settings file, to be used by multiple includes.	-|
 |--------------------------------------------------------------------------------|
-#EVENT make_CharacterSettingsIni "[MQ2] Make bot ini"
+#EVENT make_CharacterSettingsIni "Make bot ini"
 SUB EVENT_make_CharacterSettingsIni
 /if (${Debug}) /echo |- make_CharacterSettingsIni ==>
 	/echo Creating ${Me.CleanName}'${If[${Me.CleanName.Right[1].Equal[s]},,s]} settings file...
@@ -296,7 +296,7 @@ SUB EVENT_make_CharacterSettingsIni
 |------------------------------------------------------------|
 |- Deletes and Recreates aliases associated with e3.mac.	-|
 |------------------------------------------------------------|
-#EVENT updateAliases "[MQ2] Update macro aliases"
+#EVENT updateAliases "Update macro aliases"
 SUB EVENT_updateAliases
 /if (${Debug}) /echo |- EVENT_updateAliases ==>
 

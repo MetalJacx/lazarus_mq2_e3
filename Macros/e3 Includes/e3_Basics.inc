@@ -959,7 +959,7 @@ SUB EVENT_CountBots
 |- Preforms item swaps, listed in Character_Inis.	  -|
 |----------------------------------------------------|
 #EVENT Swap_Items "<#*#> Swap #1#"
-#EVENT Swap_Items "[MQ2] Swap #1#"
+#EVENT Swap_Items "Swap #1#"
 SUB EVENT_Swap_Items(line, IniEntry)
 /if (${Debug} || ${Debug_Basics}) /echo |- Event Swap_Items ==>
 	| If I don't have a matching Ini entry.
@@ -1142,7 +1142,7 @@ SUB Event_Consent(line, ChatSender, ConsentTarget)
 /RETURN
 
 |--------------------------------------------------------------------------------|
-#event gatherCorpses "[MQ2] Gather corpse#*#"
+#event gatherCorpses "Gather corpse#*#"
 SUB event_gatherCorpses
 /if (${Debug} || ${Debug_Basics}) /echo |- EVENT_gatherCorpses ==>
   /if (${Raid.Members}) {

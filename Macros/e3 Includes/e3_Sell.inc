@@ -14,13 +14,13 @@
 |- Adds items from you inventory to your Loot_Ini.	-|
 |----------------------------------------------------|
 #EVENT syncInventory "<#*#> Inventory Items"
-#EVENT syncInventory "[MQ2] Inventory Items"
+#EVENT syncInventory "Inventory Items"
 #EVENT syncInventory "<#*#> Update Loot.ini"
-#EVENT syncInventory "[MQ2] Update Loot.ini"
+#EVENT syncInventory "Update Loot.ini"
 #EVENT syncInventory "<#*#> Sync Inventory"
-#EVENT syncInventory "[MQ2] Sync Inventory"
+#EVENT syncInventory "Sync Inventory"
 #EVENT syncInventory "<#*#> Sync Loot.ini"
-#EVENT syncInventory "[MQ2] Sync Loot.ini"
+#EVENT syncInventory "Sync Loot.ini"
 SUB EVENT_syncInventory
 /if (${Debug} || ${Debug_Sell}) /echo |- event_inventoryItems ==>
 	
@@ -61,11 +61,11 @@ SUB EVENT_syncInventory
 |------------------------------------------------------------------------------------------------------------------------------------|
 |- Commands bots, including yourself, to open trade with the nearest merchant, and sell items flagged as [/Sell] in your Loot_Ini.	-|
 |------------------------------------------------------------------------------------------------------------------------------------|
-#EVENT sellItems "[MQ2] Sell Items"
+#EVENT sellItems "Sell Items"
 #EVENT sellItems "<#*#> Sell Items"
-#EVENT sellItems "[MQ2] AutoSell"
+#EVENT sellItems "AutoSell"
 #EVENT sellItems "<#*#> AutoSell"
-#EVENT sellItems "[MQ2] Auto Sell"
+#EVENT sellItems "Auto Sell"
 #EVENT sellItems "<#*#> Auto Sell"
 SUB EVENT_sellItems
 /if (${Debug} || ${Debug_Sell}) /echo |- EVENT_sellItems ==>
@@ -279,7 +279,7 @@ SUB sellItems
 			
 				| Look at each bag slot for items to sell
 				/for e 1 to ${Me.Inventory[pack${i}].Container}
- /if (${Me.Inventory[pack${i}].Container}==0) /break
+ 					/if (${Me.Inventory[pack${i}].Container}==0) /break
 				
 					/if (${Bool[${Me.Inventory[pack${i}].Item[${e}]}]}) {
 					

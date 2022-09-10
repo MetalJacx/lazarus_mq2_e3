@@ -546,7 +546,7 @@ SUB loot_Handle(int slotNum, handle)
 |--------------------------------------------------------------------|
 |- Check Loot Setting
 #EVENT checkLootSetting "<#*#> Check Loot Setting for #1#"
-#EVENT checkLootSetting "[MQ2] Check Loot Setting for #1#"
+#EVENT checkLootSetting "Check Loot Setting for #1#"
 SUB EVENT_checkLootSetting(line, itemName)
 /if (${Debug} || ${Debug_Loot}) /echo |- EVENT_checkLootSetting ==>
 	/declare itemToCheck string local ${itemName}
@@ -574,7 +574,7 @@ SUB EVENT_checkLootSetting(line, itemName)
 |--------------------------------------------------------------------|
 |- Update Loot Setting
 #EVENT updateLootSetting "<#1#> Set Loot Setting for #2# /#3#"
-#EVENT updateLootSetting "[MQ2] Set Loot Setting for #2# /#3#"
+#EVENT updateLootSetting "Set Loot Setting for #2# /#3#"
 SUB EVENT_updateLootSetting(line, ChatSender, itemName, iniSetting)
 /if (${Debug} || ${Debug_Loot}) /echo |- EVENT_updateLootSetting ==>
 	/if (${ChatSender.Equal[${Me.CleanName}]} || !${Defined[ChatSender]}) {

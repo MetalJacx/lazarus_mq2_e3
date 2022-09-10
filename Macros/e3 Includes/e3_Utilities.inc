@@ -1573,9 +1573,9 @@ SUB checkEventArgs(ChatSender, eventLine, UZR, ArgData)
 /RETURN ${c_eventArg}
 
 |----------------------------------------------------------------------------|
-#EVENT macroHelp "[MQ2] Help"
+#EVENT macroHelp "Help"
 #EVENT macroHelp "<#*#> Help"
-#EVENT macroHelp "[MQ2] Help #1#"
+#EVENT macroHelp "Help #1#"
 #EVENT macroHelp "<#*#> Help #1#"
 SUB EVENT_macroHelp(line, chapter)
 /if (${Debug}) /echo |- EVENT_macroHelp ==>

@@ -75,7 +75,7 @@ SUB Recording_Events
 |----------------------------------------------------------------------------|								
 |- For best results use a -move, stop, turn- method when recording routes.	-|
 |----------------------------------------------------------------------------|
-#event record_Route "[MQ2] Record Route"
+#event record_Route "Record Route"
 SUB event_record_Route
 /if (${Debug} || ${Debug_SmoothMoves}) /echo |- event_record_Route ==>
 	| Output route recording instructions, and begin recording the route.
@@ -126,7 +126,7 @@ SUB event_record_Route
 |----------------------------------------------------------------|
 |- Adds a door click to the route you're currently recording.	-|
 |----------------------------------------------------------------|
-#event add_click_Door "[MQ2] Add door click"
+#event add_click_Door "Add door click"
 SUB event_add_click_Door
 /if (${Debug} || ${Debug_SmoothMoves}) /echo |- add_click_Door ==>
 	/if (!${Defined[tempRoute]}) {
@@ -142,7 +142,7 @@ SUB event_add_click_Door
 |----------------------------------------------------------------|
 |- Adds a zone click to the route you're currently recording.	-|
 |----------------------------------------------------------------|
-#event add_click_Zone "[MQ2] Add zone click"
+#event add_click_Zone "Add zone click"
 SUB event_add_click_Zone
 /if (${Debug} || ${Debug_SmoothMoves}) /echo |- event_add_click_Zone ==>
 	/if (!${Defined[tempRoute]}) {
@@ -160,7 +160,7 @@ SUB event_add_click_Zone
 |--------------------------------------------------------------------|
 |- Adds a run through zone to the route you're currently recording.	-|
 |--------------------------------------------------------------------|
-#event add_run_Thru_Zone "[MQ2] Add Run through zone"
+#event add_run_Thru_Zone "Add Run through zone"
 SUB event_add_run_Thru_Zone
 /if (${Debug} || ${Debug_SmoothMoves}) /echo |- event_add_run_Thru_Zone ==>
 	/if (!${Defined[tempRoute]}) {
@@ -178,12 +178,12 @@ SUB event_add_run_Thru_Zone
 |----------------------------------------------------------------|
 |- Adds an NPC bark to the route you're currently recording.	-|
 |----------------------------------------------------------------|
-|- @param line: '[MQ2] Add Bark target msg'						-|
+|- @param line: 'Add Bark target msg'						    -|
 |- @param msgTarget: The npc to bark at.						-|
 |- @param barkIt: The msg to bark at the target.				-|
 |----------------------------------------------------------------|
-#event add_Bark "[MQ2] Add Bark #1# #2#"
-#event add_Bark "[MQ2] Add Bark #1# #2# -zone"
+#event add_Bark "Add Bark #1# #2#"
+#event add_Bark "Add Bark #1# #2# -zone"
 SUB event_add_Bark(line, msgTarget, barkIt)
 /if (${Debug} || ${Debug_SmoothMoves}) /echo |- event_add_Bark ==>
 	/if (!${Defined[tempRoute]}) {
@@ -209,7 +209,7 @@ SUB event_add_Bark(line, msgTarget, barkIt)
 |--------------------------------------------------------|
 |- Stops recording, and calculates the routes length.	-|
 |--------------------------------------------------------|
-#event end_Recording "[MQ2] End recording"
+#event end_Recording "End recording"
 SUB event_end_Recording(bool squelchEchos)
 /if (${Debug} || ${Debug_SmoothMoves}) /echo |- event_end_Recording ==>
 	/if (!${Defined[tempRoute]}) {
@@ -226,11 +226,11 @@ SUB event_end_Recording(bool squelchEchos)
 |------------------------------------------------|
 |- Saves temporary routes to Routes_Ini.		-|
 |------------------------------------------------|
-|- @param line: '[MQ2] Save Route [Name]'		-|
+|- @param line: 'Save Route [Name]'		        -|
 |- @param routeName: Name of the route to save.	-|
 |------------------------------------------------|
-#event save_Recording "[MQ2] Save Route #1#"
-#event save_Recording "[MQ2] Save Route #1# -Overwrite"
+#event save_Recording "Save Route #1#"
+#event save_Recording "Save Route #1# -Overwrite"
 SUB event_save_Recording(line, routeName)
 /if (${Debug} || ${Debug_SmoothMoves}) /echo |- event_save_Recording ==>
 	/if (!${Defined[tempRoute]}) {
@@ -259,7 +259,7 @@ SUB event_save_Recording(line, routeName)
 |------------------------------------------------|
 |- Use, /routes or /bc List routes				-|
 |------------------------------------------------|
-#event list_Routes "[MQ2] List Routes"
+#event list_Routes "List Routes"
 SUB event_list_Routes
 /if (${Debug} || ${Debug_SmoothMoves}) /echo |- event_list_Routes ==>
 	| Call setup if it hasn't been done already.	
@@ -303,7 +303,7 @@ SUB event_stop_Route(line, ChatSender)
 |----------------------------------------------------|
 |- Runs indicated routes from Routes_Ini.			-|
 |----------------------------------------------------|
-|- @param line: '[MQ2] Run Route [Name]'			-|
+|- @param line: 'Run Route [Name]'			-|
 |- @param route_Name: Name of the route to run.		-|
 |- @param ChatSender: Name of the command sender.	-|
 |----------------------------------------------------|
