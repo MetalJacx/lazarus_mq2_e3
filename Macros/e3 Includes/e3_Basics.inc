@@ -2096,6 +2096,7 @@ sub event_gimme(line, ChatSender, RequestedItem)
 		/delay 5s ${Window[InventoryWindow].Open}
 		/declare invTabCount int local ${Window[InventoryWindow].Child[IW_Subwindows].TabCount}
 		/declare altCurrencyTabNumber int local
+		/declare j int local
 		/for j 1 to ${invTabCount}
 			  /if  (${Window[InventoryWindow].Child[IW_Subwindows].Tab[${j}].Name.Equal[IW_AltCurrPage]} ) {
 				/varset altCurrencyTabNumber ${j}
