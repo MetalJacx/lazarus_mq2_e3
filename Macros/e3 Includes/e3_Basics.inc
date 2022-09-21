@@ -2094,7 +2094,15 @@ sub event_gimme(line, ChatSender, RequestedItem)
 		/if (${Window[InventoryWindow].DoOpen}) /echo Inventory Window Open
     /echo [${Time}] Delaying up to 5 second(s) in event_gimme
 		/delay 5s ${Window[InventoryWindow].Open}
-		/notify InventoryWindow IW_Subwindows tabselect 5
+		/declare invTabCount int local ${Window[InventoryWindow].Child[IW_Subwindows].TabCount}
+		/declare altCurrencyTabNumber int local
+		/for j 1 to ${invTabCount}
+			  /if  (${Window[InventoryWindow].Child[IW_Subwindows].Tab[${j}].Name.Equal[IW_AltCurrPage]} ) {
+				/varset altCurrencyTabNumber ${j}
+				/break
+			  }
+		/next j
+		/notify InventoryWindow IW_Subwindows tabselect ${altCurrencyTabNumber}
      /echo [${Time}] Delaying up to 1 second(s) in event_gimme
 		/delay 1s
 		/declare diamondCoinIndex int local ${Window[InventoryWindow].Child[AltCurr_PointList].List[=Diamond Coins,2]}
