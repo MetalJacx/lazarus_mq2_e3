@@ -261,7 +261,7 @@ SUB EVENT_makeSpellList
 /RETURN
 
 |------------------------------------------------------------------------|
-#EVENT import_SpellAliases "mport Spell Aliases"
+#EVENT import_SpellAliases "Import Spell Aliases"
 #EVENT import_SpellAliases "<#*#> Import Spell Aliases"
 SUB EVENT_import_SpellAliases
 /if (${Debug} || ${Debug_BegForBuffs}) /echo |- EVENT_import_SpellAliases ==>
