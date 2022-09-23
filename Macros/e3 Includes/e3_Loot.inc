@@ -233,30 +233,6 @@ SUB lootCorpse
       }
       
 
-      |items that are important, stackable but may have no vendor value
-      |**
-      /if (${Corpse.Item[${i}].Name.Equal[Lucky Coin]}) {
-          /varset importantItem TRUE
-      }
-      /if (!${importantItem} && ${Corpse.Item[${i}].Name.Equal[Perfected Augmentation Distiller]}) {
-          /varset importantItem TRUE
-      }
-      /if (!${importantItem} && ${Corpse.Item[${i}].Name.Equal[Diamond Coin]}) {
-          /varset importantItem TRUE
-      }
-      /if (!${importantItem} && ${Corpse.Item[${i}].Name.Equal[A Lucky Ticket]}) {
-          /varset importantItem TRUE
-      }
-      /if (!${importantItem} && ${Corpse.Item[${i}].Name.Equal[Mysterious Card]}) {
-          /varset importantItem TRUE
-      }
-        /if (!${importantItem} && ${Corpse.Item[${i}].Name.Equal[The Lady Luck blessings]}) {
-          /varset importantItem TRUE
-      }
-      /if (!${importantItem} && ${Corpse.Item[${i}].Name.Equal[Silicorrosive Grease]}) {
-          /varset importantItem TRUE
-      }
-      **|
       /if (${importantItem}) {
         /echo [${Time}]: Loot Only Stackable:hard coded important item ${Corpse.Item[${i}].Name}
       }
