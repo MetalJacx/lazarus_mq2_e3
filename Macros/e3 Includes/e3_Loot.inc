@@ -381,6 +381,9 @@ SUB lootCorpse
       /if (${Window[QuantityWnd].Open}) {
           /notify QuantityWnd QTYW_Accept_Button leftmouseup
       }
+      /if (${Window[ConfirmationDialogBox].Open}) {
+        /notify ConfirmationDialogBox CD_Yes_Button leftmouseup
+      }
       /while (${Bool[${Corpse.Item[${i}]}]} && ${Window[LootWnd].Open}) {
           |if item still on corpse, try again.
           |/echo trying to loot again ${i}
@@ -390,6 +393,9 @@ SUB lootCorpse
             /notify QuantityWnd QTYW_Accept_Button leftmouseup
             /delay 3
           }
+          /if (${Window[ConfirmationDialogBox].Open}) {
+            /notify ConfirmationDialogBox CD_Yes_Button leftmouseup
+          }          
       }
       |/call loot_Handle ${i} keep
       |/if (${Debug} || ${Debug_Loot}) /echo Done Looting i: ${i}
