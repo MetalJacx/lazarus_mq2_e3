@@ -1,33 +1,3 @@
-Skip to content
-Search or jump to…
-Pull requests
-Issues
-Marketplace
-Explore
- 
-@CerveloFellow 
-Ewiclip
-/
-lazarus_mq2_e3
-Public
-forked from sirhopsalot/lazarus_mq2_e3
-Code
-Pull requests
-Actions
-Projects
-Wiki
-Security
-Insights
-lazarus_mq2_e3/Macros/e3 Includes/e3_Basics.inc
-@livermana
-livermana Rekka: Updates to allow nec/shaman to remove agro if their agro gets …
-…
-Latest commit 7fecfd7 on Jul 7
- History
- 8 contributors
-@livermana@sirhopsalot@Ewiclip@Cometnest@Trilkin@istivaan@samadcit@shuggin
-3106 lines (2839 sloc)  137 KB
-
 |------------------------------
 |- Only bots in the same zone will engage follow.
 |- Bots will wait to engage follow until, they can see the FollowTarget, and it is within the MaxResponseDist.
