@@ -2080,13 +2080,7 @@ sub event_gimme(line, ChatSender, RequestedItem)
 		/if (${Window[InventoryWindow].DoOpen}) /echo Inventory Window Open
     /echo [${Time}] Delaying up to 5 second(s) in event_gimme
 		/delay 5s ${Window[InventoryWindow].Open}
-
-    /if (!${Window[InventoryWindow].Child[IW_AltCurrPage].Open}) {
-      /call notifyViaBCTell  ${ChatSender} "Please manually open the Alt Currency Tab and try again. Bug in MQNext will cause a crash"
-      /return
-    }
-    |uncomment out once the bug is fixed. Rekka 2022/9/5
-		|/notify InventoryWindow IW_Subwindows tabselect 5
+		/notify InventoryWindow IW_Subwindows tabselect 5
     /echo [${Time}] Delaying up to 1 second(s) in event_gimme
 		/delay 1s
 		/notify InventoryWindow AltCurr_PointList listselect ${Window[InventoryWindow].Child[AltCurr_PointList].List[=Diamond Coins,2]}
