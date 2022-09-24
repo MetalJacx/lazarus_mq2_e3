@@ -2089,7 +2089,7 @@ sub event_gimme(line, ChatSender, RequestedItem)
 		|/notify InventoryWindow IW_Subwindows tabselect 5
     /echo [${Time}] Delaying up to 1 second(s) in event_gimme
 		/delay 1s
-		/notify InventoryWindow AltCurr_PointList listselect 8
+		/notify InventoryWindow AltCurr_PointList listselect ${Window[InventoryWindow].Child[AltCurr_PointList].List[=Diamond Coins,2]}
     /echo [${Time}] Delaying up to 1 second(s) in event_gimme
 		/delay 1s
 		/notify InventoryWindow IW_AltCurr_ReclaimButton leftmouseup
