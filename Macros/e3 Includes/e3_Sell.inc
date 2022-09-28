@@ -350,274 +350,146 @@ SUB closeMerchant
 /RETURN
 
 |----------------------------------------------------------------------------------------|
-|- Sells items in your inventory that have been flagged as [/Sell] in your Loot_Ini.	-|
+|- Create an array of your inventory
 |----------------------------------------------------------------------------------------|
-SUB sellItems
-/if (${Debug} || ${Debug_Sell}) /echo |- sellItems ==>
-	/declare retryTimer timer local
+sub ScanInventory
+/if (${Debug} || ${Debug_Sell}) /echo |- ScanInventory ==>
 	/declare i int local
-	/declare e int local
+	/declare j int local
+	/declare invSlot int local
+	/declare containerSize int local
+	/if (${Defined[packArray]}) { /deletevar packArray }
+	/if (${Defined[slotArray]}) { /deletevar slotArray }
 	
-	| Scan inventory for items to sell
-	/for i 1 to ${numInventorySlots}
-	
-		/if (${Bool[${Me.Inventory[pack${i}]}]}) {
+	/echo Scanning Inventory
+	/for i 1 to ${numInventorySlots} {
+		/varcalc invSlot ${Math.Calc[${i}+22]}
 		
-			| If the item in pack slot 'i' IS a container
-			/if (${Me.Inventory[pack${i}].Container}) {
-			
-				| Look at each bag slot for items to sell
-				/for e 1 to ${Me.Inventory[pack${i}].Container}
-				
-					/if (${Bool[${Me.Inventory[pack${i}].Item[${e}]}]}) {
-					
-						| Get the loot setting for the item in pack slot 'i' slot 'e'
-						/call get_lootSetting "pack${i}" "${e}"
-					
-						| Destroy the item
-						/if (${lootSetting.Find[Destroy]}) {
-							/echo Flagging [${Me.Inventory[pack${i}].Item[${e}]}] to be destroyed...
-							/call BuildArray DestroyableItems "${Me.Inventory[pack${i}].Item[${e}]}"
-						
-						| Sell the item
-						} else /if (${lootSetting.Find[Sell]}) {
-					
-							| Check that the item has value.
-							/if (!${Me.Inventory[pack${i}].Item[${e}].Value}) {
-								/if (${destroyUnsold}) {
-									/echo [${Target.CleanName}] will not buy [${Me.Inventory[pack${i}].Item[${e}]}].  Flagging it to be destroyed.
-									/call BuildArray DestroyableItems "${Me.Inventory[pack${i}].Item[${e}]}"
-								}
-							} else {
-					
-								| Select the item to sell
-								/varset retryTimer 30
-
-								:retrySelect_Pack
-								/if (${Debug} || ${Debug_Sell}) /echo |- sellItems -| :retrySelect_Pack
-								/itemnotify in pack${i} ${e} leftmouseup
-								/delay 3
-								| If the item was not selected
-								/if (!${Window[MerchantWnd].Child[MW_SelectedItemLabel].Text.Equal[${Me.Inventory[pack${i}].Item[${e}]}]}) {
-									
-									| Try again
-									/delay 3
-									/if (!${Window[MerchantWnd].Child[MW_SelectedItemLabel].Text.Equal[${Me.Inventory[pack${i}].Item[${e}]}]}) {
-										/echo ERROR: Failed to select [${Me.Inventory[pack${i}].Item[${e}]}], skipping.
-									}
-									
-								} else {
-						
-									| Check that the buy button is enabled
-									/if (!${Window[MerchantWnd].Child[MW_Sell_Button].Enabled}) {
-										/if (${destroyUnsold}) {
-											/echo [${Target.CleanName}] will not buy [${Me.Inventory[pack${i}].Item[${e}]}].  Flagging it to be destroyed.
-											/call BuildArray DestroyableItems "${Me.Inventory[pack${i}].Item[${e}]}"
-										}
-									} else {
-						
-										| Sell the item
-										/varset retryTimer 30
-										/echo [${Time}] Selling from pack [${Me.Inventory[pack${i}].Item[${e}]}].
-										
-										:SellItem_Pack
-										/if (${Debug} || ${Debug_Sell}) /echo |- sellItems -| :SellItem_Pack
-										/notify MerchantWnd MW_Sell_Button leftmouseup
-										/delay 1
-										| Close the quantity window
-										/if (${Window[QuantityWnd].Open}) {
-											/notify QuantityWnd QTYW_Accept_Button leftmouseup
-											/delay 3
-										} else {
-											|leave a total delay of 3 for client-server communication
-											/delay 2
-										}
-
-										| If the item is still in my inventory
-										/if (${Bool[${Me.Inventory[pack${i}].Item[${e}]}]} && ${retryTimer}) {
-											/goto :SellItem
-										} else /if (${Bool[${Me.Inventory[pack${i}].Item[${e}]}]}) {
-											/echo ERROR: Failed to sell [${Me.Inventory[pack${i}].Item[${e}]}], skipping.
-										}
-									}
-								}
-							}
-						}
-					}
-				
-				/next e
-			
-			| If the item in pack slot 'i' is NOT a container
-			} else {
-			
-				| Get the loot setting for the item in pack slot 'i'
-				/call get_lootSetting "pack${i}" 0
-			
-				| Destroy the item
-				/if (${lootSetting.Find[Destroy]}) {
-					/echo Flagging [${InvSlot[pack${i}].Item.Name}] to be destroyed...
-					/call BuildArray DestroyableItems "${InvSlot[pack${i}].Item.Name}"
-				
-				| Sell the item
-				} else /if (${lootSetting.Find[Sell]}) {
-				
-					| Check that the item has value
-					/if (!${Me.Inventory[pack${i}].Item.Value}) {
-						/if (${destroyUnsold}) {
-							/echo [${Target.CleanName}] will not buy [${Me.Inventory[pack${i}].Item.Name}].  Flagging it to be destroyed.
-							/call BuildArray DestroyableItems "${Me.Inventory[pack${i}].Item.Name}"
-						}
-					} else {
-				
-						| Select the item to sell
-						/varset retryTimer 30
-
-						:retrySelect
-						/if (${Debug} || ${Debug_Sell}) /echo |- sellItems -| :retrySelect
-						/itemnotify in pack${i} leftmouseup
-						
-						/delay 3
-						| If the item was not selected
-						/if (!${Window[MerchantWnd].Child[MW_SelectedItemLabel].Text.Equal[${Me.Inventory[pack${i}]}]}) {
-							
-							/delay 3
-							/if (!${Window[MerchantWnd].Child[MW_SelectedItemLabel].Text.Equal[${Me.Inventory[pack${i}]}]}) {
-								/echo ERROR: Failed to select [${Me.Inventory[pack${i}]}], skipping.
-							}
-							
-						} else {
-				
-							| Check that the buy button is enabled
-							/if (!${Window[MerchantWnd].Child[MW_Sell_Button].Enabled}) {
-								/if (${destroyUnsold}) {
-									/echo [${Target.CleanName}] will not buy [${Me.Inventory[pack${i}]}].  Flagging it to be destroyed.
-									/call BuildArray DestroyableItems "${Me.Inventory[pack${i}]}"
-								}
-							} else {
-				
-								| Sell the item
-								/varset retryTimer 30
-								/echo [${Time}] Selling from root [${Me.Inventory[pack${i}]}].
-								
-								:SellItem
-								/if (${Debug} || ${Debug_Sell}) /echo |- sellItems -| :SellItem
-								/notify MerchantWnd MW_Sell_Button leftmouseup
-								|give it a moment to show the qty window
-								/delay 1
-								| Close the quantity window if it opened
-								:CheckQtyWindow
-								/if (${Window[QuantityWnd].Open}) {
-									/notify QuantityWnd QTYW_Accept_Button leftmouseup
-									/delay 3
-									/if (${Window[QuantityWnd].Open}) { 
-										/goto :CheckQtyWindow
-									}
-								} else {
-									|leave a total delay of 3 for client-server communication
-									/delay 2
-								}
-								| If the item is still in my inventory
-								/if (${Bool[${Me.Inventory[pack${i}]}]} && ${retryTimer}) {
-									/goto :SellItem
-								} else /if (${Bool[${Me.Inventory[pack${i}]}]}) {
-									/echo ERROR: Failed to sell [${Me.Inventory[pack${i}]}], skipping.
-								}
-							}
-						}
-					}
+		/if (${Bool[${Me.Inventory[${invSlot}].Container}]}) {
+			/varset containerSize ${Me.Inventory[${invSlot}].Container}
+			/for j 1 to ${containerSize}
+				/if (${Bool[${Me.Inventory[${invSlot}].Item[${j}]}]}) {
+					/call BuildArray packArray ${i}
+					/call BuildArray slotArray ${j}
 				}
+			/next j
+		} else {
+			/if (${Bool[${Me.Inventory[${invSlot}]}]}) {
+				/call BuildArray packArray ${i}
+				/call BuildArray slotArray 0
 			}
 		}
-		
 	/next i
-
 /if (${Debug} || ${Debug_Sell}) /echo <== sellItems -|
-/RETURN
+/Return
 
-SUB destroyItems
-/if (${Debug} || ${Debug_Sell}) /echo |- destroyItem ==>
-	
+Sub sellItems
+/if (${Debug} || ${Debug_Sell}) /echo |- ScanInventory ==>
 	/declare i int local
-	/declare e int local
-	/declare y int local
+	/declare maxClickAttempts int local 5
+	/declare clickAttempts int local 0
 	
-	/declare retryTimer timer local
-	/declare badItem string local
-	
-	/for i 1 to ${DestroyableItems.Size}
-	
-		/varset badItem ${DestroyableItems[${i}]}
-
-		/for e 1 to ${numInventorySlots}
-		
-			/if (!${Me.Inventory[pack${e}].Container}) {
-				
-				/if (${badItem.Equal[${Me.Inventory[pack${e}]}]}) {
-					/varset retryTimer 50
-					
-					:retry_SlotPickup
-					/itemnotify pack${e} leftmouseup
-					/delay 5 ${Cursor.ID} || ${Window[QuantityWnd].Open}
-					
-					| If the quantity window is open.
-					/if (${Window[QuantityWnd].Open}) {
-						/notify QuantityWnd QTYW_Accept_Button leftmouseup
-						/delay 10 !${Window[QuantityWnd].Open}
-					}
-					
-					/delay 5 ${Cursor.ID}
-					
-					/if (${badItem.Equal[${Cursor}]}) {
-						/echo Destroying [${Cursor}].
-						/destroy
-					} else {
-						/if (${retryTimer}) {
-							/goto :retry_SlotPickup
-						} else {
-							/echo ERROR: I failed to destroy [${badItem}], skipping.
-						}
-					}
-				}
+	/echo Selling Items
+	/call ScanInventory
+	/for i 1 to ${packArray.Size} {
+		/call get_lootSetting pack${packArray[${i}]} ${slotArray[${i}]}
+		/if (${slotArray[${i}].Equal[0]}) {
+			|/echo Item: ${Me.Inventory[${Math.Calc[${packArray[${i}]}+22]}]} --- ${lootSetting}
+		} else {
+			|/echo Item: ${Me.Inventory[${Math.Calc[${packArray[${i}]}+22]}].Item[${Math.Calc[${slotArray[${i}]}]}]} --- ${lootSetting}
+		}
+		/if (${lootSetting.Find[Sell]}) {
+			/if (${slotArray[${i}].Equal[0]}) {
+				|/echo Selling Item: ${Me.Inventory[${Math.Calc[${packArray[${i}]}+22]}]}
 			} else {
-			
-				/for y 1 to ${Me.Inventory[pack${e}].Container}
-				
-					/if (${badItem.Equal[${Me.Inventory[pack${e}].Item[${y}]}]}) {
-					
-						/varset retryTimer 50
-					
-						:retry_BagPickup
-						/itemnotify in pack${e} ${y} leftmouseup
-						/delay 5 ${Cursor.ID} || ${Window[QuantityWnd].Open}
-						
-						| If the quantity window is open.
-						/if (${Window[QuantityWnd].Open}) {
-							/notify QuantityWnd QTYW_Accept_Button leftmouseup
-							/delay 10 !${Window[QuantityWnd].Open}
-						}
-						
-						/delay 5 ${Cursor.ID}
-						
-						/if (${badItem.Equal[${Cursor}]}) {
-							/echo Destroying [${Cursor}].
-							/destroy
-						} else {
-							/if (${retryTimer}) {
-								/goto :retry_BagPickup
-							} else {
-								/echo ERROR: I failed to destroy [${badItem}], skipping.
-							}
-						}
-					}
-				/next y
+				|/echo Selling Item: ${Me.Inventory[${Math.Calc[${packArray[${i}]}+22]}].Item[${Math.Calc[${slotArray[${i}]}]}]}
 			}
-		
-		/next e
-		
+			
+			/varset clickAttempts 0
+			:selectItemAgain
+			/if (${slotArray[${i}].Equal[0]}) {
+				/itemnotify ${Math.Calc[${packArray[${i}]}+22]} leftmouseup
+			} else {
+				/itemnotify in pack${packArray[${i}]} ${slotArray[${i}]} leftmouseup
+			}
+			/delay 1
+			/if (!${Window[MerchantWnd].Child[MW_Sell_Button].Enabled} && (${clickAttempts} < ${maxClickAttempts})) {
+				/varset clickAttempts ${Math.Calc[${clickAttempts}+1]}
+				/goto :selectItemAgain
+			}
+			/varset clickAttempts 0
+			:pressSellAgain
+			/notify MerchantWnd MW_Sell_Button leftmouseup
+			/delay 1
+			/if (${Window[MerchantWnd].Child[MW_Sell_Button].Enabled} && !${Window[QuantityWnd].Open} && (${clickAttempts} < ${maxClickAttempts})) {
+				/varset clickAttempts ${Math.Calc[${clickAttempts}+1]}
+				/goto :pressSellAgain
+			}
+			/delay 1
+			/varset clickAttempts 0
+			:clickQuantityAgain
+			/if (${Window[QuantityWnd].Open} && (${clickAttempts} < ${maxClickAttempts})) {
+				/notify QuantityWnd QTYW_Accept_Button leftmouseup
+				/delay 1
+				/varset clickAttempts ${Math.Calc[${clickAttempts}+1]}
+				/goto :clickQuantityAgain
+			}
+			/delay 3
+		}
 	/next i
+/if (${Debug} || ${Debug_Sell}) /echo <== sellItems -|
+/return
 
-/if (${Debug} || ${Debug_Sell}) /echo <== destroyItem -|
-/RETURN
+Sub destroyItems
+/if (${Debug} || ${Debug_Sell}) /echo |- destroyItems ==>
+	/declare i int local
+	/declare maxClickAttempts int local 5
+	/declare clickAttempts int local 0
+	
+	/call ScanInventory
+	/echo Destroying Items
+	/for i 1 to ${packArray.Size} {
+		/call get_lootSetting pack${packArray[${i}]} ${slotArray[${i}]}
+		/if (${slotArray[${i}].Equal[0]}) {
+			|/echo Item: ${Me.Inventory[${Math.Calc[${packArray[${i}]}+22]}]} --- ${lootSetting}
+		} else {
+			|/echo Item: ${Me.Inventory[${Math.Calc[${packArray[${i}]}+22]}].Item[${Math.Calc[${slotArray[${i}]}]}]} --- ${lootSetting}
+		}
+		/if (${lootSetting.Find[Destroy]}) {
+			/if (${slotArray[${i}].Equal[0]}) {
+				/echo Destroying Item: ${Me.Inventory[${Math.Calc[${packArray[${i}]}+22]}]}
+			} else {
+				/echo Destroying Item: ${Me.Inventory[${Math.Calc[${packArray[${i}]}+22]}].Item[${Math.Calc[${slotArray[${i}]}]}]}
+			}
+			
+			/varset clickAttempts 0
+			:selectItemAgain
+			/if (${slotArray[${i}].Equal[0]}) {
+				/itemnotify ${Math.Calc[${packArray[${i}]}+22]} leftmouseup
+			} else {
+				/itemnotify in pack${packArray[${i}]} ${slotArray[${i}]} leftmouseup
+			}
+			/delay 1
+			/if (!${Cursor.ID} && (${clickAttempts} < ${maxClickAttempts})) {
+				/varset clickAttempts ${Math.Calc[${clickAttempts}+1]}
+				/goto :selectItemAgain
+			}
+			/delay 1
+			/varset clickAttempts 0
+			:clickQuantityAgain
+			/if (${Window[QuantityWnd].Open} && (${clickAttempts} < ${maxClickAttempts})) {
+				/notify QuantityWnd QTYW_Accept_Button leftmouseup
+				/delay 1
+				/varset clickAttempts ${Math.Calc[${clickAttempts}+1]}
+				/goto :clickQuantityAgain
+			}
+			/destroy
+			/delay 3
+			/autoinventory
+		}
+	/next i
+/if (${Debug} || ${Debug_Sell}) /echo <== destroyItems -|
+/return
 
 SUB sell_Setup
 	/call iniToVarV "${advSettings_Ini},Debug,Debug Sell (On/Off)" Debug_Sell bool outer
