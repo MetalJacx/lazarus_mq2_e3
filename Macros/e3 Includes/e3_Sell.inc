@@ -442,7 +442,7 @@ Sub sellItems
 Sub destroyItems
 /if (${Debug} || ${Debug_Sell}) /echo |- destroyItems ==>
 	/declare i int local
-	/declare maxClickAttempts int local 5
+	/declare maxClickAttempts int local 10
 	/declare clickAttempts int local 0
 	
 	/echo Destroying Items
@@ -464,13 +464,8 @@ Sub destroyItems
 			} else {
 				/itemnotify in pack${packArray[${i}]} ${slotArray[${i}]} leftmouseup
 			}
-			/delay 1
-			/if (!${Cursor.ID} && (${clickAttempts} < ${maxClickAttempts})) {
-				/varset clickAttempts ${Math.Calc[${clickAttempts}+1]}
-				/goto :selectItemAgain
-			}
-			/if (${clickAttempts} >= ${maxClickAttempts}) /echo Max clickAttempts reached on :selectItemAgain
-			/delay 1
+			/delay 1	
+			
 			/varset clickAttempts 0
 			:clickQuantityAgain
 			/if (${Window[QuantityWnd].Open} && (${clickAttempts} < ${maxClickAttempts})) {
@@ -480,6 +475,13 @@ Sub destroyItems
 				/goto :clickQuantityAgain
 			}
 			/if (${clickAttempts} >= ${maxClickAttempts}) /echo Max clickAttempts reached on :clickQuantityAgain
+			
+			/if (!${Cursor.ID} && (${clickAttempts} < ${maxClickAttempts})) {
+				/varset clickAttempts ${Math.Calc[${clickAttempts}+1]}
+				/goto :selectItemAgain
+			}
+			/if (${clickAttempts} >= ${maxClickAttempts}) /echo Max clickAttempts reached on :selectItemAgain
+			/delay 1			
 			/destroy
 			/delay 3
 			/autoinventory
