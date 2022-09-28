@@ -386,19 +386,20 @@ sub ScanInventory
 Sub sellItems
 /if (${Debug} || ${Debug_Sell}) /echo |- ScanInventory ==>
 	/declare i int local
-	/declare maxClickAttempts int local 5
+	/declare maxClickAttempts int local 10
 	/declare clickAttempts int local 0
 	
 	/echo Selling Items
 	/call ScanInventory
+	/if (${packArray.Size} == 0) /goto sellEmptyInventory
 	/for i 1 to ${packArray.Size} {
 		/call get_lootSetting pack${packArray[${i}]} ${slotArray[${i}]}
-		/if (${slotArray[${i}].Equal[0]}) {
-			/echo Item: ${Me.Inventory[${Math.Calc[${packArray[${i}]}+22]}]} --- ${lootSetting}
-		} else {
-			/echo Item: ${Me.Inventory[${Math.Calc[${packArray[${i}]}+22]}].Item[${Math.Calc[${slotArray[${i}]}]}]} --- ${lootSetting}
-		}
 		/if (${lootSetting.Find[Sell]}) {
+			/if (${slotArray[${i}].Equal[0]}) {
+				/echo Selling: ${Me.Inventory[${Math.Calc[${packArray[${i}]}+22]}]} 
+			} else {
+				/echo Selling: ${Me.Inventory[${Math.Calc[${packArray[${i}]}+22]}].Item[${Math.Calc[${slotArray[${i}]}]}]}
+			}
 			/varset clickAttempts 0
 			:selectItemAgain
 			/if (${slotArray[${i}].Equal[0]}) {
@@ -411,6 +412,7 @@ Sub sellItems
 				/varset clickAttempts ${Math.Calc[${clickAttempts}+1]}
 				/goto :selectItemAgain
 			}
+			/if (${clickAttempts} >= ${maxClickAttempts}) /echo Max clickAttempts reached on :selectItemAgain ${i}
 			/varset clickAttempts 0
 			:pressSellAgain
 			/notify MerchantWnd MW_Sell_Button leftmouseup
@@ -419,6 +421,7 @@ Sub sellItems
 				/varset clickAttempts ${Math.Calc[${clickAttempts}+1]}
 				/goto :pressSellAgain
 			}
+			/if (${clickAttempts} >= ${maxClickAttempts}) /echo Max clickAttempts reached on :pressSellAgain ${i}
 			/delay 1
 			/varset clickAttempts 0
 			:clickQuantityAgain
@@ -428,9 +431,11 @@ Sub sellItems
 				/varset clickAttempts ${Math.Calc[${clickAttempts}+1]}
 				/goto :clickQuantityAgain
 			}
+			/if (${clickAttempts} >= ${maxClickAttempts}) /echo Max clickAttempts reached on :clickQuantityAgain ${i}
 			/delay 3
 		}
 	/next i
+	:sellEmptyInventory
 /if (${Debug} || ${Debug_Sell}) /echo <== sellItems -|
 /return
 
@@ -440,8 +445,9 @@ Sub destroyItems
 	/declare maxClickAttempts int local 5
 	/declare clickAttempts int local 0
 	
-	/call ScanInventory
 	/echo Destroying Items
+	/call ScanInventory
+	/if (${packArray.Size} == 0) /goto destroyEmptyInventory
 	/for i 1 to ${packArray.Size} {
 		/call get_lootSetting pack${packArray[${i}]} ${slotArray[${i}]}
 		/if (${lootSetting.Find[Destroy]}) {
@@ -463,6 +469,7 @@ Sub destroyItems
 				/varset clickAttempts ${Math.Calc[${clickAttempts}+1]}
 				/goto :selectItemAgain
 			}
+			/if (${clickAttempts} >= ${maxClickAttempts}) /echo Max clickAttempts reached on :selectItemAgain
 			/delay 1
 			/varset clickAttempts 0
 			:clickQuantityAgain
@@ -472,11 +479,13 @@ Sub destroyItems
 				/varset clickAttempts ${Math.Calc[${clickAttempts}+1]}
 				/goto :clickQuantityAgain
 			}
+			/if (${clickAttempts} >= ${maxClickAttempts}) /echo Max clickAttempts reached on :clickQuantityAgain
 			/destroy
 			/delay 3
 			/autoinventory
 		}
 	/next i
+	:destroyEmptyInventory
 /if (${Debug} || ${Debug_Sell}) /echo <== destroyItems -|
 /return
 
