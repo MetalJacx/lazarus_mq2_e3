@@ -216,7 +216,7 @@ SUB Event_YourKill(line)
       /bc [+y+] Auto setting AA Exp to 100%, at ${Me.PctExp}% of Level ${Me.Level}
     }
   }
-  /if (${Auto_Loot} && (${Me.CombatState.NotEqual[Combat]} || ${combatLooting})) /call loot_Area
+  /if (${Auto_Loot} && (${Me.CombatState.NotEqual[Combat]} && ${SpawnCount[xtarhater radius 100]} == 0 || ${combatLooting})) /call loot_Area
 /RETURN
 
 |----------------------------------------------------------------------------------------------------|
