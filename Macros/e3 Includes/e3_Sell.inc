@@ -349,9 +349,12 @@ SUB closeMerchant
 /if (${Debug} || ${Debug_Sell}) /echo <== closeMerchant -|
 /RETURN
 
-|----------------------------------------------------------------------------------------|
+|-----------------------------------------------------------------------------------------------------------------------------------------|
 |- Create an array of your inventory
-|----------------------------------------------------------------------------------------|
+|-----------------------------------------------------------------------------------------------------------------------------------------|
+| Scan Inventory creates arrays of your inventory so that the code is a bit more readable.  Iterating inventory typically takes two passes
+| one pass for containers and one pass for inventory slots.  The array just stores the location types so we do a single loop and try to 
+| make the code a bit more readable.  Scan inventory will only keep track of items and ignores empty slots.
 sub ScanInventory
 /if (${Debug} || ${Debug_Sell}) /echo |- ScanInventory ==>
 	/declare i int local
@@ -360,6 +363,7 @@ sub ScanInventory
 	/declare containerSize int local
 	/if (${Defined[packArray]}) { /deletevar packArray }
 	/if (${Defined[slotArray]}) { /deletevar slotArray }
+	/if (${Defined[itemNameArray]}) { /deletevar itemNameArray }
 	
 	/echo Scanning Inventory
 	/for i 1 to ${numInventorySlots} {
@@ -371,12 +375,14 @@ sub ScanInventory
 				/if (${Bool[${Me.Inventory[${invSlot}].Item[${j}]}]}) {
 					/call BuildArray packArray ${i}
 					/call BuildArray slotArray ${j}
+					/call BuildArray itemNameArray "${Me.Inventory[${invSlot}].Item[${j}].Name}"
 				}
 			/next j
 		} else {
 			/if (${Bool[${Me.Inventory[${invSlot}]}]}) {
 				/call BuildArray packArray ${i}
 				/call BuildArray slotArray 0
+				/call BuildArray itemNameArray "${Me.Inventory[${invSlot}].Name}"
 			}
 		}
 	/next i
@@ -386,21 +392,26 @@ sub ScanInventory
 Sub sellItems
 /if (${Debug} || ${Debug_Sell}) /echo |- ScanInventory ==>
 	/declare i int local
+	| maxClickAttempts is our retry counter.  Latency causes things not to work so we will retry a certain number of times to do our best to make sure items get sold or destroyed
 	/declare maxClickAttempts int local 10
 	/declare clickAttempts int local 0
 	
 	/echo Selling Items
+	
+	| Scan your inventory into your pack and slot arrays
 	/call ScanInventory
+	
+	| If your inventory is empty just jump out
 	/if (${packArray.Size} == 0) /goto sellEmptyInventory
+	
+	| Loop through all items that we scanned into the array
 	/for i 1 to ${packArray.Size} {
 		/call get_lootSetting pack${packArray[${i}]} ${slotArray[${i}]}
-		/if (${lootSetting.Find[Sell]}) {
-			/if (${slotArray[${i}].Equal[0]}) {
-				/echo Selling: ${Me.Inventory[${Math.Calc[${packArray[${i}]}+22]}]} 
-			} else {
-				/echo Selling: ${Me.Inventory[${Math.Calc[${packArray[${i}]}+22]}].Item[${Math.Calc[${slotArray[${i}]}]}]}
-			}
+		/if (${lootSetting.Find[Sell]}) {	
+			/echo Selling: ${itemNameArray[${i}]}
+
 			/varset clickAttempts 0
+			| With the merchant window open, we'll left click the items to add them to the merchant sell window
 			:selectItemAgain
 			/if (${slotArray[${i}].Equal[0]}) {
 				/itemnotify ${Math.Calc[${packArray[${i}]}+22]} leftmouseup
@@ -408,14 +419,21 @@ Sub sellItems
 				/itemnotify in pack${packArray[${i}]} ${slotArray[${i}]} leftmouseup
 			}
 			/delay 1
+	
+			| Check to see if the sell button is enabled once the merchant window is open
 			/if (!${Window[MerchantWnd].Child[MW_Sell_Button].Enabled} && (${clickAttempts} < ${maxClickAttempts})) {
 				/varset clickAttempts ${Math.Calc[${clickAttempts}+1]}
 				/goto :selectItemAgain
 			}
-			/if (${clickAttempts} >= ${maxClickAttempts}) /echo Max clickAttempts reached on :selectItemAgain ${i}
+			
+			| If we hit max click attempts print this message for now.  Probably move this to a debug only message eventually.
+			/if (${clickAttempts} >= ${maxClickAttempts}) /echo Max clickAttempts reached on :selectItemAgain ${itemNameArray[${i}]}
+			
+			| The item should be in the merchant window at this point, and the sell button is enabled, so let's click the sell button
+			| we're trying to sell with Shift key held down so that we don't get the quantity window
 			/varset clickAttempts 0
 			:pressSellAgain
-			/notify MerchantWnd MW_Sell_Button leftmouseup
+			/shiftkey /notify MerchantWnd MW_Sell_Button leftmouseup
 			/delay 1
 			/if (${Window[MerchantWnd].Child[MW_Sell_Button].Enabled} && !${Window[QuantityWnd].Open} && (${clickAttempts} < ${maxClickAttempts})) {
 				/varset clickAttempts ${Math.Calc[${clickAttempts}+1]}
@@ -425,7 +443,9 @@ Sub sellItems
 			/delay 1
 			/varset clickAttempts 0
 			:clickQuantityAgain
+			| We used /shiftkey so hopefully the quantity window doesn't come up, but let's check just in case.
 			/if (${Window[QuantityWnd].Open} && (${clickAttempts} < ${maxClickAttempts})) {
+				/echo Quantity window popped up.
 				/notify QuantityWnd QTYW_Accept_Button leftmouseup
 				/delay 1
 				/varset clickAttempts ${Math.Calc[${clickAttempts}+1]}
@@ -451,18 +471,14 @@ Sub destroyItems
 	/for i 1 to ${packArray.Size} {
 		/call get_lootSetting pack${packArray[${i}]} ${slotArray[${i}]}
 		/if (${lootSetting.Find[Destroy]}) {
-			/if (${slotArray[${i}].Equal[0]}) {
-				/echo Destroying Item: ${Me.Inventory[${Math.Calc[${packArray[${i}]}+22]}]}
-			} else {
-				/echo Destroying Item: ${Me.Inventory[${Math.Calc[${packArray[${i}]}+22]}].Item[${Math.Calc[${slotArray[${i}]}]}]}
-			}
+			/echo Destroying: ${itemNameArray[${i}]}
 			
 			/varset clickAttempts 0
 			:selectItemAgain
 			/if (${slotArray[${i}].Equal[0]}) {
-				/itemnotify ${Math.Calc[${packArray[${i}]}+22]} leftmouseup
+				/shiftkey /itemnotify ${Math.Calc[${packArray[${i}]}+22]} leftmouseup
 			} else {
-				/itemnotify in pack${packArray[${i}]} ${slotArray[${i}]} leftmouseup
+				/shiftkey /itemnotify in pack${packArray[${i}]} ${slotArray[${i}]} leftmouseup
 			}
 			/delay 1	
 			
