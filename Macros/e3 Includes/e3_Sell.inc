@@ -396,13 +396,11 @@ Sub sellItems
 	/declare maxClickAttempts int local 10
 	/declare clickAttempts int local 0
 	
-	/echo Selling Items
-	/time
+	/echo Selling Items ${GameTime.Time12}
 	
 	| Scan your inventory into your pack and slot arrays
 	/call ScanInventory
-	/echo ScanInventory Complete
-	/time
+	/echo ScanInventory Complete ${GameTime.Time12}
 	
 	| If your inventory is empty just jump out
 	/if (${packArray.Size} == 0) /goto sellEmptyInventory
@@ -459,8 +457,7 @@ Sub sellItems
 		}
 	/next i
 	:sellEmptyInventory
-	/echo Sell Inventory Complete
-	/time
+	/echo Sell Inventory Complete ${GameTime.Time12}
 /if (${Debug} || ${Debug_Sell}) /echo <== sellItems -|
 /return
 
