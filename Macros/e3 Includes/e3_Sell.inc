@@ -428,7 +428,7 @@ Sub sellItems
 	/echo ScanInventory Complete ${GameTime.Time12} --- ${GameTime.SecondsSinceMidnight}
 	
 	| If your inventory is empty just jump out
-	/if (${packArray.Size} == 0) /goto sellEmptyInventory
+	/if (${packArray.Size} == 0) /goto :sellEmptyInventory
 	
 	| Loop through all items that we scanned into the array
 	/for i 1 to ${packArray.Size} {
