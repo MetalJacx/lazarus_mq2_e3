@@ -386,8 +386,8 @@ sub ScanInventory
 		}
 	/next i
 	
-	/declare packArray[${arraySizeNeeded}]
-	/declare slotArray[${arraySizeNeeded}]
+	/declare packArray[${arraySizeNeeded}] string outer
+	/declare slotArray[${arraySizeNeeded}] string outer
 
 	/echo Inserting items into Arrays
 	/for i 1 to ${numInventorySlots} {
