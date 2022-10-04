@@ -434,7 +434,6 @@ Sub sellItems
 	/for i 1 to ${packArray.Size} {
 		/call get_lootSetting pack${packArray[${i}]} ${slotArray[${i}]}
 		/if (${lootSetting.Find[Sell]}) {	
-			/echo Selling: ${itemNameArray[${i}]}
 
 			/varset clickAttempts 0
 			| With the merchant window open, we'll left click the items to add them to the merchant sell window
@@ -498,7 +497,6 @@ Sub destroyItems
 	/for i 1 to ${packArray.Size} {
 		/call get_lootSetting pack${packArray[${i}]} ${slotArray[${i}]}
 		/if (${lootSetting.Find[Destroy]}) {
-			/echo Destroying: ${itemNameArray[${i}]}
 			
 			/varset clickAttempts 0
 			:selectItemAgain
