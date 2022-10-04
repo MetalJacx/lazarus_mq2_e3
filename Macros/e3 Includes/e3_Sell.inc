@@ -361,11 +361,14 @@ sub ScanInventory
 	/declare j int local
 	/declare invSlot int local
 	/declare containerSize int local
+	/declare arraySizeNeeded int local 0
+	/declare arrayCounter int local 1
+	
 	/if (${Defined[packArray]}) { /deletevar packArray }
 	/if (${Defined[slotArray]}) { /deletevar slotArray }
-	/if (${Defined[itemNameArray]}) { /deletevar itemNameArray }
 	
 	/echo Scanning Inventory
+	/echo Calculating array size needed
 	/for i 1 to ${numInventorySlots} {
 		/varcalc invSlot ${Math.Calc[${i}+22]}
 		
@@ -373,19 +376,41 @@ sub ScanInventory
 			/varset containerSize ${Me.Inventory[${invSlot}].Container}
 			/for j 1 to ${containerSize}
 				/if (${Bool[${Me.Inventory[${invSlot}].Item[${j}]}]}) {
-					/call BuildArray packArray ${i}
-					/call BuildArray slotArray ${j}
-					/call BuildArray itemNameArray "${Me.Inventory[${invSlot}].Item[${j}].Name}"
+					/varcalc arraySizeNeeded ${Math.Calc[${arraySizeNeeded}+1]}
 				}
 			/next j
 		} else {
 			/if (${Bool[${Me.Inventory[${invSlot}]}]}) {
-				/call BuildArray packArray ${i}
-				/call BuildArray slotArray 0
-				/call BuildArray itemNameArray "${Me.Inventory[${invSlot}].Name}"
+				/varcalc arraySizeNeeded ${Math.Calc[${arraySizeNeeded}+1]}
 			}
 		}
 	/next i
+	
+	/declare packArray[${arraySizeNeeded}]
+	/declare slotArray[${arraySizeNeeded}]
+
+	/echo Inserting items into Arrays
+	/for i 1 to ${numInventorySlots} {
+		/varcalc invSlot ${Math.Calc[${i}+22]}
+		
+		/if (${Bool[${Me.Inventory[${invSlot}].Container}]}) {
+			/varset containerSize ${Me.Inventory[${invSlot}].Container}
+			/for j 1 to ${containerSize}
+				/if (${Bool[${Me.Inventory[${invSlot}].Item[${j}]}]}) {
+					/varset packArray[${arrayCounter}] ${i}
+					/varset slotArray[${arrayCounter}] ${j}
+					/varcalc arrayCounter ${Math.Calc[${arrayCounter}+1]}
+				}
+			/next j
+		} else {
+			/if (${Bool[${Me.Inventory[${invSlot}]}]}) {
+				/varset packArray[${arrayCounter}] ${i}
+				/varset slotArray[${arrayCounter}] 0
+				/varcalc arrayCounter ${Math.Calc[${arrayCounter}+1]}
+			}
+		}
+	/next i
+	/echo Scan Inventory complete
 /if (${Debug} || ${Debug_Sell}) /echo <== sellItems -|
 /Return
 
