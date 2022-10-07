@@ -278,7 +278,7 @@ SUB EVENT_clickIt(line, ChatSender, eventParams)
     /for i 1 to ${doorList.Size}
       /if (${debug_clickit}) /echo ${i} ${doorList[${i}]}
       /squelch /doortarget id ${doorList[${i}].Arg[1,,]}
-      /if ((${closestDoorDist}==0 || ${DoorTarget.Distance} < ${closestDoorDist}) && ${DoorTarget.Distance} < 400) {
+      /if ((${closestDoorDist}==0 || ${DoorTarget.Distance} < ${closestDoorDist}) && ${DoorTarget.Distance} < 400 && ${DoorTarget.Distance}) {
         /varset closestDoorDist ${DoorTarget.Distance}
         /varset closestDoorID ${doorList[${i}].Arg[1,,]}
       }
