@@ -1428,9 +1428,6 @@ SUB EVENT_groupUp(line, ChatSender, createGroup)
       /if (${${IniMode}[${Group_Ini},${${IniMode}[${Group_Ini}].Arg[${i},|]},GroupMember#${e}].NotEqual[PLACEHOLDER]}) {
         /varcalc groupSize ${groupSize}+1
         | -Alert PC of incoming group invite.
-	/squelch /bct ${groupMembers[${e}]} //raiddisband
-	/squelch /bct ${groupMembers[${e}]} //disband
-	/delay 5
         /invite ${groupMembers[${e}]}
       }
       /next e
