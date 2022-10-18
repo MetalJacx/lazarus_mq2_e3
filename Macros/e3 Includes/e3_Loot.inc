@@ -214,102 +214,68 @@ SUB lootCorpse
       }
     } else /if (${LootOnlyStackableEnabled}) {
 
-      |Stackable check code      
-      /if (${Corpse.Item[${i}].Stackable} && !${Corpse.Item[${i}].NoDrop}) {
+      |Loot Only Stackable: Always Loot Item Check      
+      /echo [${Time}]: Loot Only Stackable: value of item=${Corpse.Item[${i}].Value} vs setting=${LootOnlyStackableValueGreater}
+      
+      /varset lootSetting Skip
+      /varset importantItem FALSE
 
-        /echo [${Time}]: Loot Only Stackable: value of item=${Corpse.Item[${i}].Value} vs setting=${LootOnlyStackableValueGreater}
-        
-        /varset lootSetting Skip
-        /varset importantItem FALSE
-
-        /if (${Defined[stackableItemArray]}) {
-          /varset stackCounter 1
-          /for stackCounter 1 to ${stackableItemArray.Size}
-              /if (!${importantItem} && ${Corpse.Item[${i}].Name.Equal[${stackableItemArray[${stackCounter}]}]}) {
-                /varset importantItem TRUE
-                /echo Found Important stackable item: ${stackableItemArray[${stackCounter}]}
-                /goto :stackItemCheckComplete
-              }
-          /next stackCounter
-          :stackItemCheckComplete
-        }
-       
-
-        |items that are important, stackable but may have no vendor value
-        |**
-        /if (${Corpse.Item[${i}].Name.Equal[Lucky Coin]}) {
-            /varset importantItem TRUE
-        }
-        /if (!${importantItem} && ${Corpse.Item[${i}].Name.Equal[Perfected Augmentation Distiller]}) {
-            /varset importantItem TRUE
-        }
-        /if (!${importantItem} && ${Corpse.Item[${i}].Name.Equal[Diamond Coin]}) {
-            /varset importantItem TRUE
-        }
-        /if (!${importantItem} && ${Corpse.Item[${i}].Name.Equal[A Lucky Ticket]}) {
-            /varset importantItem TRUE
-        }
-        /if (!${importantItem} && ${Corpse.Item[${i}].Name.Equal[Mysterious Card]}) {
-            /varset importantItem TRUE
-        }
-         /if (!${importantItem} && ${Corpse.Item[${i}].Name.Equal[The Lady Luck blessings]}) {
-            /varset importantItem TRUE
-        }
-        /if (!${importantItem} && ${Corpse.Item[${i}].Name.Equal[Silicorrosive Grease]}) {
-            /varset importantItem TRUE
-        }
-        **|
-        /if (${importantItem}) {
-
-          /echo [${Time}]: Loot Only Stackable:hard coded important item ${Corpse.Item[${i}].Name}
-        }
-        |end items that are tackable but have no vendor value.
-
-        |Loot tradeskill items if configured to do so.
-        
-        /if (!${importantItem}) {
-
-            /if (${Corpse.Item[${i}].Value} >=${LootOnlyStackableValueGreater} ) {
-              /varset importantItem True
-              /echo [${Time}]: Loot Only Stackable:Keeping item ${Corpse.Item[${i}].Name} as its value is above or equal to threshhold
-            } 
-        }
-        
-        /if (!${importantItem} && ${LootOnlyStackableTradeSkillsALL} && ${Corpse.Item[${i}].Tradeskills}) {
-
-          |We loot all trade skills 
-            /varset importantItem TRUE
-            /echo [${Time}]: Loot Only Stackable:Keeping item ${Corpse.Item[${i}].Name} as its a tradeskill item and we are set to loot all tradeskills.
-        } 
-        |/echo common trades skill var setting = ${LootOnlyStackableTradeSkillsCommon}
-        /if (!${importantItem} && ${LootOnlyStackableTradeSkillsCommon}) {
-
-          /if (!${importantItem} && ${Corpse.Item[${i}].Name.Find[ Pelt]}>0) {
-            /varset importantItem TRUE
-           }
-          /if (!${importantItem} && ${Corpse.Item[${i}].Name.Find[ Silk]}>0) {
+      /if (${Defined[stackableItemArray]}) {
+        /varset stackCounter 1
+        /for stackCounter 1 to ${stackableItemArray.Size}
+            /if (!${importantItem} && ${Corpse.Item[${i}].Name.Equal[${stackableItemArray[${stackCounter}]}]}) {
               /varset importantItem TRUE
-          }
-          /if (!${importantItem} && ${Corpse.Item[${i}].Name.Find[ Ore]}>0) {
-              /varset importantItem TRUE
-          }
-
-          /if (${importantItem}) {
-            /echo [${Time}]: Loot Only Stackable:Keeping item ${Corpse.Item[${i}].Name} as its a common tradeskill item.
-          }
-          
-        }
-
-        /if (${importantItem}) {
-          /varset lootSetting Keep
-        }
-
-      } else {
-        |not stackable, but stackable setting set so simply skip
-        /varset lootSetting Skip
+              /echo Found Important stackable item: ${stackableItemArray[${stackCounter}]}
+              /goto :stackItemCheckComplete
+            }
+        /next stackCounter
+        :stackItemCheckComplete
       }
       
+
+      /if (${importantItem}) {
+        /echo [${Time}]: Loot Only Stackable:hard coded important item ${Corpse.Item[${i}].Name}
+      }
+      |end items that are tackable but have no vendor value.
+
+      |Loot tradeskill items if configured to do so.
       
+      /if (!${importantItem}) {
+
+          /if (${Corpse.Item[${i}].Value} >= ${LootOnlyStackableValueGreater} && ${Corpse.Item[${i}].Stackable}) {
+            /varset importantItem True
+            /echo [${Time}]: Loot Only Stackable:Keeping item ${Corpse.Item[${i}].Name} as its value is above or equal to threshhold
+          } 
+      }
+      
+      /if (!${importantItem} && ${LootOnlyStackableTradeSkillsALL} && ${Corpse.Item[${i}].Tradeskills}) {
+
+        |We loot all trade skills 
+          /varset importantItem TRUE
+          /echo [${Time}]: Loot Only Stackable:Keeping item ${Corpse.Item[${i}].Name} as its a tradeskill item and we are set to loot all tradeskills.
+      } 
+      |/echo common trades skill var setting = ${LootOnlyStackableTradeSkillsCommon}
+      /if (!${importantItem} && ${LootOnlyStackableTradeSkillsCommon}) {
+
+        /if (!${importantItem} && ${Corpse.Item[${i}].Name.Find[ Pelt]}>0) {
+          /varset importantItem TRUE
+          }
+        /if (!${importantItem} && ${Corpse.Item[${i}].Name.Find[ Silk]}>0) {
+            /varset importantItem TRUE
+        }
+        /if (!${importantItem} && ${Corpse.Item[${i}].Name.Find[ Ore]}>0) {
+            /varset importantItem TRUE
+        }
+
+        /if (${importantItem}) {
+          /echo [${Time}]: Loot Only Stackable:Keeping item ${Corpse.Item[${i}].Name} as its a common tradeskill item.
+        }
+        
+      }
+
+      /if (${importantItem}) {
+        /varset lootSetting Keep
+      }
     } else {
       |Default loot ini check
       /call get_lootSetting ${i} 0
@@ -391,6 +357,9 @@ SUB lootCorpse
       /if (${Window[QuantityWnd].Open}) {
           /notify QuantityWnd QTYW_Accept_Button leftmouseup
       }
+      /if (${Window[ConfirmationDialogBox].Open}) {
+        /notify ConfirmationDialogBox CD_Yes_Button leftmouseup
+      }
       /while (${Bool[${Corpse.Item[${i}]}]} && ${Window[LootWnd].Open}) {
           |if item still on corpse, try again.
           |/echo trying to loot again ${i}
@@ -400,6 +369,9 @@ SUB lootCorpse
             /notify QuantityWnd QTYW_Accept_Button leftmouseup
             /delay 3
           }
+          /if (${Window[ConfirmationDialogBox].Open}) {
+            /notify ConfirmationDialogBox CD_Yes_Button leftmouseup
+          }          
       }
       |/call loot_Handle ${i} keep
       |/if (${Debug} || ${Debug_Loot}) /echo Done Looting i: ${i}
