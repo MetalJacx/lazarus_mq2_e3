@@ -11,7 +11,7 @@ Sub PAL_Setup
 SUB PAL_MacroSettings
 /if (${Debug}) /echo |- PAL_MacroSettings ==>
 	/call WriteToIni "${advSettings_Ini},PAL Functions,PAL Function#1" "check_Tanking" 1
-	/call WriteToIni "${advSettings_Ini},PAL Functions,PAL Function#2" "check_Yaulp" 1
+	/call WriteToIni "${advSettings_Ini},PAL Functions,PAL Function#2" "check_PaladinYaulp" 1
 	/call WriteToIni "${advSettings_Ini},PAL Functions,PAL Function#3" "check_Burns" 1
 	/call WriteToIni "${advSettings_Ini},PAL Functions,PAL Function#4" "check_Heals" 1
 	/call WriteToIni "${advSettings_Ini},PAL Functions,PAL Function#5" "check_Cures" 1
@@ -34,3 +34,16 @@ Sub PAL_Aliases
 |----------------------------------------------------------------------------|
 Sub PAL_Background_Events
 /return
+|----------------------------------------------------------------------------|
+SUB check_PaladinYaulp
+/if (${Debug}) /echo |- check_PaladinYaulp ==>
+  /if (${AutoYaulp} && !${medBreak} && !${Me.Moving} && !${Me.Invis}) {
+    /declare castName string local ${yaulpSpell.Arg[1,/]}
+    /if (!${Bool[${Me.Buff[${castName}]}]} && ${Spell[${castName}].NewStacks}) {
+      /if (${Target.ID}) /declare tempTarget int local ${Target.ID}
+      /call castSimpleSpell "${castName}" 0
+    }
+  }
+/if (${Debug}) /echo <== check_PaladinYaulp -|
+/RETURN
+|----------------------------------------------------------------------------|
