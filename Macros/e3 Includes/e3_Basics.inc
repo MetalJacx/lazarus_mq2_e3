@@ -2892,6 +2892,9 @@ SUB check_StoneOn
   /for i 1 to 10
     /if (${stoneOn} && ${HasManastone} && ${Me.PctMana} < 100 && ${Me.PctHPs} > 70) {
       /itemnotify manastone rightmouseup
+      /if (${i} < 10) {
+        /delay 2
+      }
     }
   /next i
   /if (${stoneOn} && ${Me.PctMana} >= 100) {
