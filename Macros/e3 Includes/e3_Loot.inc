@@ -407,57 +407,56 @@ SUB lootCorpse
 |--------------------------------------------------------------------------|
 SUB get_lootSetting(invSlot, itemSlot)
 |/if (${Debug} || ${Debug_Loot}) /echo |- get_lootSetting invSlot: ${invSlot} ${itemSlot}
-  /if (!${Bool[${Corpse.Items}]} && !${Window[MerchantWnd]}) /return
 	/declare itemName string local
 	/declare itemValue string local
-  /declare itemRawValue int local
+	/declare itemRawValue int local
 	/declare iniEntryVariables string local
 	/varset lootSetting
 	| If the item is not in a bag
 	/if (!${Bool[${itemSlot}]}) {
 		|/echo invSlot variable: ${invSlot} 
-		| Reset itemName if it contains a ':'.  ':'s cause errors when reading from the ini, because they act as a delimiter, just like '='s
-|		/echo ${Corpse.Item[${invSlot}].Name}		
-		/varset itemName ${Corpse.Item[${invSlot}].Name}
+		| Reset itemName if it contains a ':'.  ':'s cause errors when reading from the ini, because they act as a delimiter, just like '='s	
+		/varset itemName ${Me.Inventory[${invSlot}].Name}
 		/if (${itemName.Find[:]}) /varset itemName ${itemName.Replace[:,;]}
-    /if (${itemName.Find[,]}) {
-      /call RemoveComma "${itemName}"
-      /varset itemName ${Macro.Return}
-    }
+		/if (${itemName.Find[,]}) {
+			/call RemoveComma "${itemName}"
+			/varset itemName ${Macro.Return}
+		}
 		| Set item value
-		/varset itemValue ${Corpse.Item[${invSlot}].Value}
-    	/varset itemRawValue ${Corpse.Item[${invSlot}].Value}
+		/varset itemValue ${Me.Inventory[${invSlot}].Value}
+    	/varset itemRawValue ${Me.Inventory[${invSlot}].Value}
     	/varset itemValue ${If[${Bool[${itemValue.Left[${Math.Calc[${itemValue.Length} - 3].Int}]}]},${itemValue.Left[${Math.Calc[${itemValue.Length} - 3].Int}]}p,]}${If[${Bool[${itemValue.Mid[${Math.Calc[${itemValue.Length} - 2].Int}]}]},${itemValue.Mid[${Math.Calc[${itemValue.Length} - 2].Int}]}g,]}${If[${Bool[${itemValue.Mid[${Math.Calc[${itemValue.Length} - 1].Int}]}]},${itemValue.Mid[${Math.Calc[${itemValue.Length} - 1].Int}]}s,]}${If[${Bool[${itemValue.Right[1]}]},${itemValue.Right[1]}c,]}
 		
 		| Set ini variables like stack size, (C), (ND) etc.
-		/varset iniEntryVariables ${If[${Corpse.Item[${invSlot}].Stackable},(${Corpse.Item[${invSlot}].StackSize}),]}${If[${Corpse.Item[${invSlot}].NoDrop},(ND),]}${If[${Corpse.Item[${invSlot}].Lore},(L),]}${If[${Corpse.Item[${invSlot}].Container},(C),]}
+		/varset iniEntryVariables ${If[${Me.Inventory[${invSlot}].Stackable},(${Me.Inventory[${invSlot}].StackSize}),]}${If[${Me.Inventory[${invSlot}].NoDrop},(ND),]}${If[${Me.Inventory[${invSlot}].Lore},(L),]}${If[${Me.Inventory[${invSlot}].Container},(C),]}
 		| Check for a Loot_Ini entry
 		|/echo /if (!{Ini[${Loot_Ini},${itemName.Left[1]},${itemName} ${itemValue}${iniEntryVariables}].Length})
 		/if (!${Ini[${Loot_Ini},${itemName.Left[1]},${itemName} ${itemValue}${iniEntryVariables}].Length}) /echo ifsuccess
 		/if (!${Ini[${Loot_Ini},${itemName.Left[1]},${itemName} ${itemValue}${iniEntryVariables}].Length}) {
-			/echo /call WriteToIni "${Loot_Ini},${itemName.Left[1]},${itemName} ${itemValue}${iniEntryVariables}" ${If[${Corpse.Item[${invSlot}].Container},Container,${If[${Corpse.Item[${invSlot}].NoDrop},Skip,Keep${If[${Corpse.Item[${invSlot}].Stackable},|${Corpse.Item[${invSlot}].StackSize},]}]}]}
-			/call WriteToIni "${Loot_Ini},${itemName.Left[1]},${itemName} ${itemValue}${iniEntryVariables}" ${If[${Corpse.Item[${invSlot}].Container},Container,${If[${Corpse.Item[${invSlot}].NoDrop},Skip,Keep${If[${Corpse.Item[${invSlot}].Stackable},|${Corpse.Item[${invSlot}].StackSize},]}]}]}
-			/echo /docommand ${ChatToggle} Added: [${Corpse.Item[${invSlot}].Name}(${Ini[${Loot_Ini},${itemName.Left[1]},${itemName} ${itemValue}${iniEntryVariables}]})] to [${Loot_Ini}].
-			/docommand ${ChatToggle} Added: [${Corpse.Item[${invSlot}].Name}(${Ini[${Loot_Ini},${itemName.Left[1]},${itemName} ${itemValue}${iniEntryVariables}]})] to [${Loot_Ini}].
+			/echo /call WriteToIni "${Loot_Ini},${itemName.Left[1]},${itemName} ${itemValue}${iniEntryVariables}" ${If[${Me.Inventory[${invSlot}].Container},Container,${If[${Me.Inventory[${invSlot}].NoDrop},Skip,Keep${If[${Me.Inventory[${invSlot}].Stackable},|${Me.Inventory[${invSlot}].StackSize},]}]}]}
+			/call WriteToIni "${Loot_Ini},${itemName.Left[1]},${itemName} ${itemValue}${iniEntryVariables}" ${If[${Me.Inventory[${invSlot}].Container},Container,${If[${Me.Inventory[${invSlot}].NoDrop},Skip,Keep${If[${Me.Inventory[${invSlot}].Stackable},|${Me.Inventory[${invSlot}].StackSize},]}]}]}
+			/echo /docommand ${ChatToggle} Added: [${Me.Inventory[${invSlot}].Name}(${Ini[${Loot_Ini},${itemName.Left[1]},${itemName} ${itemValue}${iniEntryVariables}]})] to [${Loot_Ini}].
+			/docommand ${ChatToggle} Added: [${Me.Inventory[${invSlot}].Name}(${Ini[${Loot_Ini},${itemName.Left[1]},${itemName} ${itemValue}${iniEntryVariables}]})] to [${Loot_Ini}].
 		}
 	| If the item is in a bag
 	} else {
 		| Reset itemName if it contains a ':'.  ':'s cause errors when reading from the ini, because they act as a delimiter, just like '='s
 		/varset itemName ${Me.Inventory[${invSlot}].Item[${itemSlot}].Name}
 		/if (${itemName.Find[:]}) /varset itemName ${itemName.Replace[:,;]}
-    /if (${itemName.Find[,]}) {
-      /call RemoveComma "${itemName}"
-      /varset itemName ${Macro.Return}
-    }
+		/if (${itemName.Find[,]}) {
+		  /call RemoveComma "${itemName}"
+		  /varset itemName ${Macro.Return}
+		}
 		| Set item value
 		/varset itemValue ${Me.Inventory[${invSlot}].Item[${itemSlot}].Value}
 		/varset itemValue ${If[${Bool[${itemValue.Left[${Math.Calc[${itemValue.Length} - 3].Int}]}]},${itemValue.Left[${Math.Calc[${itemValue.Length} - 3].Int}]}p,]}${If[${Bool[${itemValue.Mid[${Math.Calc[${itemValue.Length} - 2].Int}]}]},${itemValue.Mid[${Math.Calc[${itemValue.Length} - 2].Int}]}g,]}${If[${Bool[${itemValue.Mid[${Math.Calc[${itemValue.Length} - 1].Int}]}]},${itemValue.Mid[${Math.Calc[${itemValue.Length} - 1].Int}]}s,]}${If[${Bool[${itemValue.Right[1]}]},${itemValue.Right[1]}c,]}
 		| Set ini variables like stack size, (C), (ND) etc.
 		/varset iniEntryVariables ${If[${Me.Inventory[${invSlot}].Item[${itemSlot}].Stackable},(${Me.Inventory[${invSlot}].Item[${itemSlot}].StackSize}),]}${If[${Me.Inventory[${invSlot}].Item[${itemSlot}].NoDrop},(ND),]}${If[${Me.Inventory[${invSlot}].Item[${itemSlot}].Lore},(L),]}${If[${Me.Inventory[${invSlot}].Item[${itemSlot}].Container},(C),]}
+
 		| Check for a Loot_Ini entry
 		/if (!${Ini[${Loot_Ini},${itemName.Left[1]},${itemName} ${itemValue}${iniEntryVariables}].Length}) {
 			
-      /if (!(${LootOnlyStackableEnabled} &&  !${Me.Inventory[${invSlot}].Item[${itemSlot}].Stackable})) {
+		/if (!(${LootOnlyStackableEnabled} &&  !${Me.Inventory[${invSlot}].Item[${itemSlot}].Stackable})) {
         /call WriteToIni "${Loot_Ini},${itemName.Left[1]},${itemName} ${itemValue}${iniEntryVariables}" ${If[${Me.Inventory[${invSlot}].Item[${itemSlot}].Container},Container,${If[${Me.Inventory[${invSlot}].Item[${itemSlot}].NoDrop},Skip,Keep${If[${Me.Inventory[${invSlot}].Item[${itemSlot}].Stackable},|${Me.Inventory[${invSlot}].Item[${itemSlot}].StackSize},]}]}]}
         /docommand ${ChatToggle} Added: [${Me.Inventory[${invSlot}].Item[${itemSlot}].Name}(${Ini[${Loot_Ini},${itemName.Left[1]},${itemName} ${itemValue}${iniEntryVariables}]})] to [${Loot_Ini}].
       }
