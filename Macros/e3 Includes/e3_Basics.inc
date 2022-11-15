@@ -30,20 +30,24 @@ SUB EVENT_Follow(line, ChatSender, eventParams)
     /if (${AdvPath.Following}) /squelch /afollow off
   } else {
     | -Check Range
-    /if (${Spawn[=${FollowTarget}].Distance} > ${MaxResponseDist} && ${Bool[${NetBots[${SpawnToFollow}].InZone}]}) {
-      /docommand ${ChatToggle} [${FollowTarget}] is too far away.
+    /if (${Spawn[=${FollowTarget}].Distance} > ${MaxResponseDist} && ${Bool[${NetBots[${SpawnToFollow}].InZone}]} || !${Spawn[=${FollowTarget}].LineOfSight}) {
+      /docommand ${ChatToggle} [${FollowTarget}] is far, please give ${Me.CleanName} time to catch up.
+	  /nav id ${Spawn[=${FollowTarget}].ID}
+	  /while (${Navigation.Active}) {
+	    /if (${Spawn[=${FollowTarget}].Distance} < ${MaxResponseDist} && ${Spawn[=${FollowTarget}].LineOfSight}) {
+          /nav stop
+		  /varset Following TRUE
+          /varset rebuffTimer 25
+          /call AcquireFollow
+		}
+      }		
     } else {
-      | -Check LoS.
-      /if (!${Spawn[=${FollowTarget}].LineOfSight}) {
-        /docommand ${ChatToggle} I cannot see [${FollowTarget}].
-      } else {
         | -Stop assisting so we don't try to stick to the AssistTarget.
         /if (${Assisting} || ${Me.Combat}) /call AssistOff
           /varset Following TRUE
           /varset rebuffTimer 25
           /call AcquireFollow
       }
-    }
   }
 /if (${Debug} || ${Debug_Basics}) /echo <== EVENT_Follow -|
 /RETURN
