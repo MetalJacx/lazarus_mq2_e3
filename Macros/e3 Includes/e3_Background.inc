@@ -76,7 +76,8 @@ SUB check_Follow
       } else /if (${followTgtDistance} > ${LeashLength}) {
         /if (!${FollowCheckTimer}) {
           /if (!${AdvPath.Status} && !${Stick.Active}) {
-            /bct ${FollowTarget} //popup ${Me} stopped moving! Dist:${followTgtDistance},LoS:${followTgtLoS}
+            /bct ${FollowTarget} //popup ${Me} stopped moving! Dist:${followTgtDistance},LoS:${followTgtLoS}. Is now ReAcquiring.
+	    /call AcquireFollow
           } else {
             /bct ${FollowTarget} //popup ${Me} is falling behind. Dist:${followTgtDistance},LoS:${followTgtLoS}
           }
