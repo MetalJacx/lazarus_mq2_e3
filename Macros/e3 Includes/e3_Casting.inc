@@ -235,6 +235,8 @@ Sub e3_Cast(int targetID, ArrayName, int ArrayIndex, bool StopEchos, bool NoDela
 	/if (${beforeEvent.Length}>1) {
 		/echo BeforeEvent configured, calling "${beforeEvent}" before ${pendingCast}
 		/docommand ${beforeEvent}
+		/if (${beforeEvent.Find[exchange]}) /delay 5
+        	/if (${beforeEvent.Find[equipset]}) /delay 5
 	}
 	/declare beforeSpell string local ${${ArrayName}[${ArrayIndex},${iBeforeSpell}]}
 	/if (${beforeSpell.Length}>1) {
